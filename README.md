@@ -1,2 +1,2 @@
 # DesertLand
-A Deep Learning framework for educative purpose in C#
+A Deep Learning framework for education purpose in C#
