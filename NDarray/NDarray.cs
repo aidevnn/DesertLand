@@ -1,0 +1,241 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace NDarrayLib
+{
+    public class NDarray<Type>
+    {
+        public static Operations<Type> OpsT;
+
+        static NDarray()
+        {
+            if (typeof(Type) == typeof(int))
+                OpsT = new OpsInt() as Operations<Type>;
+            else if (typeof(Type) == typeof(float))
+                OpsT = new OpsFloat() as Operations<Type>;
+            else if (typeof(Type) == typeof(double))
+                OpsT = new OpsDouble() as Operations<Type>;
+            else
+                throw new ArgumentException($"{typeof(Type).Name} is not supported. Only int, float or double");
+        }
+
+        public int[] Shape { get; set; }
+        public int[] Strides { get; set; }
+        public int[] Indices { get; set; }
+        public int Count { get; set; }
+
+        internal Func<int, Type> getAt;
+        internal Action<int, Type> setAt;
+
+        static int nbGet = 0, nbGetData = 0;
+
+        internal NDarray(Type v0, int[] shape)
+        {
+            if (shape.Length == 0)
+                shape = new int[] { 1 };
+
+            Shape = shape.ToArray();
+            Strides = Utils.Shape2Strides(Shape);
+            Indices = new int[Shape.Length];
+            Count = Utils.ArrMul(Shape);
+
+            getAt = idx => v0;
+            setAt = (idx, v) => { getAt = i => v; };
+        }
+
+        internal NDarray(Type[] data, int[] shape)
+        {
+            if (shape.Length == 0)
+                shape = new int[] { 1 };
+
+            Shape = shape.ToArray();
+            Strides = Utils.Shape2Strides(Shape);
+            Indices = new int[Shape.Length];
+            Count = Utils.ArrMul(Shape);
+
+            SetData(data);
+        }
+
+        internal NDarray(int[] shape)
+        {
+            if (shape.Length == 0)
+                shape = new int[] { 1 };
+
+            Shape = shape.ToArray();
+            Strides = Utils.Shape2Strides(Shape);
+            Indices = new int[Shape.Length];
+            Count = Utils.ArrMul(Shape);
+
+            getAt = idx => OpsT.Zero;
+            setAt = (idx, v) => { getAt = i => v; };
+        }
+
+        internal NDarray(int[] shape, int[] strides)
+        {
+            if (shape.Length == 0)
+            {
+                shape = new int[] { 1 };
+                strides = new int[] { 1 };
+            }
+
+            Shape = shape.ToArray();
+            Strides = strides.ToArray();
+            Indices = new int[Shape.Length];
+            Count = Utils.ArrMul(Shape);
+
+            getAt = idx => OpsT.Zero;
+            setAt = (idx, v) => { getAt = i => v; };
+        }
+
+        internal NDarray(NDarray<Type> nDarray)
+        {
+            Shape = nDarray.Shape.ToArray();
+            Strides = nDarray.Strides.ToArray();
+            Indices = new int[Shape.Length];
+            Count = Utils.ArrMul(Shape);
+
+            getAt = idx => OpsT.Zero;
+            setAt = (idx, v) => { getAt = i => v; };
+        }
+
+        public Type GetAt(int idx)
+        {
+            ++nbGet;
+            return getAt(idx);
+        }
+        public void SetAt(int idx, Type v) => setAt(idx, v);
+
+        public void SetData(Type[] data)
+        {
+            if (Count != data.Length)
+                throw new Exception();
+
+            getAt = idx =>
+            {
+                ++nbGetData;
+                return data[idx];
+            };
+            setAt = (idx, v) => data[idx] = v;
+        }
+
+        public Type[] GetData => Enumerable.Range(0, Count).Select(GetAt).ToArray();
+
+        public NDarray<Type> this[int k]
+        {
+            get
+            {
+                var nd0 = new NDarray<Type>(Shape.Skip(1).ToArray());
+                int offset = k * Strides[0];
+                nd0.getAt = i => GetAt(i + offset);
+                nd0.setAt = (i, v) => SetAt(i + offset, v);
+                nd0.SetData(nd0.GetData);
+                return nd0;
+            }
+        }
+
+        public NDarray<Type> Copy
+        {
+            get
+            {
+                var nd0 = new NDarray<Type>(Shape);
+                nd0.SetData(GetData);
+                return nd0;
+            }
+        }
+
+        public NDview<Type> View => new NDview<Type>(this);
+
+        public NDview<Type> Reshape(params int[] shape) => ND.Reshape(View, shape);
+        public NDview<Type> Transpose(int[] table) => ND.Transpose(View, table);
+        public NDview<Type> T => ND.Transpose<Type>(this);
+
+        public override string ToString()
+        {
+            var nargs = new int[Shape.Length];
+            var strides = Utils.Shape2Strides(Shape);
+
+            string result = "";
+            var last = strides.Length == 1 ? Count : strides[strides.Length - 2];
+            string before, after;
+
+            nbGet = nbGetData = 0;
+            List<Type> listValues = GetData.ToList();
+
+            if (Utils.DebugNumPy)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"Class:{GetType().Name,-20}");
+                if (Shape.Length > 1 || Shape[0] != 1)
+                {
+                    sb.AppendLine($"Shape:({Shape.Glue()}) Version:{GetHashCode(),10}");
+                    //sb.AppendLine($"Strides:({Strides.Glue()})");
+                }
+
+                string dbg = $" : np.array([{listValues.Glue(",")}], dtype={OpsT.dtype}).reshape({Shape.Glue(",")})";
+                var nd = $"NDArray<{typeof(Type).Name}>";
+                sb.AppendLine($"{nd,-20} {Shape.Glue("x")}{dbg}");
+                sb.AppendLine($"NB Get:{nbGetData} / {nbGet}");
+                Console.WriteLine(sb);
+            }
+
+            var ml0 = listValues.Select(v => $"{v}").Max(v => v.Length);
+            var ml1 = listValues.Select(v => $"{v:F3}").Max(v => v.Length);
+            string fmt = $"{{0,{ml0 + 2}}}";
+            if (ml0 > ml1 + 3)
+                fmt = $"{{0,{ml1 + 2}:F3}}";
+
+            for (int idx = 0; idx < Count; ++idx)
+            {
+                after = before = "";
+
+                if (idx % last == 0 || idx % last == last - 1)
+                {
+                    before = idx != 0 ? " " : "[";
+                    after = idx == Count - 1 ? "]" : "";
+                    for (int l = strides.Length - 2; l >= 0; --l)
+                    {
+                        if (idx % strides[l] == 0) before += "[";
+                        else before = " " + before;
+
+                        if (idx % strides[l] == strides[l] - 1) after += "]";
+                    }
+                }
+
+                result += idx % last == 0 ? before : "";
+                var val = listValues[idx];
+                result += string.Format(fmt, val);
+                result += idx % last == last - 1 ? after + "\n" : "";
+            }
+
+            if (!Utils.DebugNumPy)
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+
+            return result;
+        }
+
+        public static implicit operator NDview<Type>(NDarray<Type> nDarray) => nDarray.View;
+
+        public static NDview<Type> operator +(NDarray<Type> a, NDarray<Type> b) => ND.Add<Type>(a, b);
+        public static NDview<Type> operator +(double a, NDarray<Type> b) => ND.Add<Type>(a, b);
+        public static NDview<Type> operator +(NDarray<Type> a, double b) => ND.Add<Type>(a, b);
+
+        public static NDview<Type> operator -(NDarray<Type> a) => ND.Neg<Type>(a);
+        public static NDview<Type> operator -(NDarray<Type> a, NDarray<Type> b) => ND.Sub<Type>(a, b);
+        public static NDview<Type> operator -(double a, NDarray<Type> b) => ND.Sub<Type>(a, b);
+        public static NDview<Type> operator -(NDarray<Type> a, double b) => ND.Sub<Type>(a, b);
+
+        public static NDview<Type> operator *(NDarray<Type> a, NDarray<Type> b) => ND.Mul<Type>(a, b);
+        public static NDview<Type> operator *(double a, NDarray<Type> b) => ND.Mul<Type>(a, b);
+        public static NDview<Type> operator *(NDarray<Type> a, double b) => ND.Mul<Type>(a, b);
+
+        public static NDview<Type> operator /(NDarray<Type> a, NDarray<Type> b) => ND.Div<Type>(a, b);
+        public static NDview<Type> operator /(double a, NDarray<Type> b) => ND.Div<Type>(a, b);
+        public static NDview<Type> operator /(NDarray<Type> a, double b) => ND.Div<Type>(a, b);
+
+
+    }
+}

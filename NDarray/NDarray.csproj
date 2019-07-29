@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{FCAC446D-EFBA-433D-9134-90AC76DEB602}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NDarray</RootNamespace>
+    <RootNamespace>NDarrayLib</RootNamespace>
     <AssemblyName>NDarray</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
@@ -35,6 +35,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NDarray.cs" />
+    <Compile Include="Operations.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="NDview.cs" />
+    <Compile Include="ND.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
