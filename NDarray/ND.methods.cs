@@ -223,63 +223,47 @@ namespace NDarrayLib
                 var right = b.fnc();
 
                 if (left.Shape.Length != right.Shape.Length)
-                    throw new ArgumentException($"Cannot horizontal concat rank={left.Shape.Length} and rank={right.Shape.Length}");
+                    throw new ArgumentException($"Cannot concat rank={left.Shape.Length} and rank={right.Shape.Length}");
+
+                if (axis < 0 || axis >= left.Shape.Length)
+                    throw new ArgumentException("Bad axis concatenation");
 
                 for (int k = 0; k < left.Shape.Length; ++k)
                 {
                     if (k == axis) continue;
 
                     if (left.Shape[k] != right.Shape[k])
-                        throw new ArgumentException($"Cannot horizontal concat ({left.Shape.Glue()}) and ({right.Shape.Glue()})");
+                        throw new ArgumentException($"Cannot concat ({left.Shape.Glue()}) and ({right.Shape.Glue()}) along axis={axis}");
                 }
 
                 int dim = left.Shape[axis];
 
                 var nshape = left.Shape.ToArray();
                 nshape[axis] += right.Shape[axis];
-                var nd2 = new NDarray<Type>(shape: nshape);
-                int[] indices = new int[nshape.Length];
+                var nd0 = new NDarray<Type>(shape: nshape);
 
-                nd2.getAt = idx =>
+                nd0.getAt = idx =>
                 {
-                    Utils.InputIndicesFromIndex(idx, nd2.Shape, nd2.Indices);
-                    if (nd2.Indices[axis] < dim)
+                    Utils.InputIndicesFromIndex(idx, nd0.Shape, nd0.Indices);
+                    if (nd0.Indices[axis] < dim)
                     {
-                        int idx0 = Utils.Indices2Offset(nd2.Indices, left.Shape, left.Strides);
+                        int idx0 = Utils.Indices2Offset(nd0.Indices, left.Shape, left.Strides);
                         return left.GetAt(idx0);
                     }
                     else
                     {
-                        nd2.Indices[axis] -= dim;
-                        int idx0 = Utils.Indices2Offset(nd2.Indices, right.Shape, right.Strides);
+                        nd0.Indices[axis] -= dim;
+                        int idx0 = Utils.Indices2Offset(nd0.Indices, right.Shape, right.Strides);
                         return right.GetAt(idx0);
                     }
                 };
 
-                nd2.setAt = (idx, v) =>
-                {
-                    Utils.InputIndicesFromIndex(idx, nd2.Shape, nd2.Indices);
-                    if (nd2.Indices[axis] < dim)
-                    {
-                        int idx0 = Utils.Indices2Offset(nd2.Indices, left.Shape, left.Strides);
-                        left.SetAt(idx0, v);
-                    }
-                    else
-                    {
-                        nd2.Indices[axis] -= dim;
-                        int idx0 = Utils.Indices2Offset(nd2.Indices, right.Shape, right.Strides);
-                        right.SetAt(idx0, v);
-                    }
-                };
-
-                return nd2;
+                nd0.SetData(nd0.GetData);
+                return nd0;
             };
 
             return new NDview<Type>(fnc);
         }
-
-        public static NDview<Type> HConcat<Type>(NDview<Type> a, NDview<Type> b) => Concatene(a, b, a.Shape.Length - 1);
-        public static NDview<Type> VConcat<Type>(NDview<Type> a, NDview<Type> b) => Concatene(a, b);
 
         public static List<(NDarray<Type>, NDarray<Type>)> BatchIterator<Type>(NDarray<Type> X, NDarray<Type> Y, int batchsize = 64, bool shuffle = false)
         {

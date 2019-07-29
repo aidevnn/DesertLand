@@ -74,23 +74,23 @@ namespace DesertLand
 
         static void Test5()
         {
-            //var a = ND.Arange(0, 24).Reshape(-1, 2, 4).Copy;
-            //var b = ND.Arange(24, 12).Reshape(-1, 2, 2).Copy;
-
-            //Console.WriteLine(a);
-            //Console.WriteLine(b);
-            //Console.WriteLine(ND.HConcat<int>(a, b));
-
-            var a = ND.Arange(1, 8).Reshape(4, -1).Copy;
-            var b = ND.Arange(1, 4).Reshape(4, -1).Copy;
+            var a = ND.Arange(0, 24).Reshape(2, -1, 3);
+            var b = ND.Arange(24, 12).Reshape(2, -1, 3);
 
             Console.WriteLine(a);
             Console.WriteLine(b);
+            Console.WriteLine(ND.Concatene(a, b, 1));
 
-            Utils.DebugNumpy = Utils.DbgNo;
-            var allBatch = ND.BatchIterator(a, b, 2, true);
-            foreach (var batch in allBatch)
-                Console.WriteLine(ND.HConcat<int>(batch.Item1, batch.Item2));
+            //var a = ND.Arange(1, 8).Reshape(4, -1).Copy;
+            //var b = ND.Arange(1, 4).Reshape(4, -1).Copy;
+
+            //Console.WriteLine(a);
+            //Console.WriteLine(b);
+
+            //Utils.DebugNumpy = Utils.DbgNo;
+            //var allBatch = ND.BatchIterator(a, b, 2, true);
+            //foreach (var batch in allBatch)
+                //Console.WriteLine(ND.HConcat<int>(batch.Item1, batch.Item2));
         }
 
         public static void Main(string[] args)
