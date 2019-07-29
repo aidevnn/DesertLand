@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesertLand", "DesertLand\DesertLand.csproj", "{24B89134-5926-4178-A28F-5CDC4F9AE285}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDarray", "NDarray\NDarray.csproj", "{FCAC446D-EFBA-433D-9134-90AC76DEB602}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x86.ActiveCfg = Debug|x86
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x86.Build.0 = Debug|x86
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x86.ActiveCfg = Release|x86
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x86.Build.0 = Release|x86
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x86.ActiveCfg = Debug|x86
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x86.Build.0 = Debug|x86
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x86.ActiveCfg = Release|x86
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal
