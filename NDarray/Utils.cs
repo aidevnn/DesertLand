@@ -17,8 +17,8 @@ namespace NDarrayLib
         public static bool IsDebugLvl1 => (DebugNumpy & DbgLvl1) == DbgLvl1;
         public static bool IsDebugLvl2 => (DebugNumpy & DbgLvl2) == DbgLvl2;
 
-        private static readonly Random random = new Random(123);
-        //private static readonly Random random = new Random((int)DateTime.Now.Ticks);
+        //private static readonly Random random = new Random(123);
+        private static readonly Random random = new Random((int)DateTime.Now.Ticks);
         
         public static Random GetRandom => random;
 

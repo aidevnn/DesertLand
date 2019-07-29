@@ -214,5 +214,113 @@ namespace NDarrayLib
 
             return new NDview<Type>(fnc);
         }
+
+        public static NDview<Type> Concatene<Type>(NDview<Type> a, NDview<Type> b, int axis = 0)
+        {
+            Fnc<Type> fnc = () =>
+            {
+                var left = a.fnc();
+                var right = b.fnc();
+
+                if (left.Shape.Length != right.Shape.Length)
+                    throw new ArgumentException($"Cannot horizontal concat rank={left.Shape.Length} and rank={right.Shape.Length}");
+
+                for (int k = 0; k < left.Shape.Length; ++k)
+                {
+                    if (k == axis) continue;
+
+                    if (left.Shape[k] != right.Shape[k])
+                        throw new ArgumentException($"Cannot horizontal concat ({left.Shape.Glue()}) and ({right.Shape.Glue()})");
+                }
+
+                int dim = left.Shape[axis];
+
+                var nshape = left.Shape.ToArray();
+                nshape[axis] += right.Shape[axis];
+                var nd2 = new NDarray<Type>(shape: nshape);
+                int[] indices = new int[nshape.Length];
+
+                nd2.getAt = idx =>
+                {
+                    Utils.InputIndicesFromIndex(idx, nd2.Shape, nd2.Indices);
+                    if (nd2.Indices[axis] < dim)
+                    {
+                        int idx0 = Utils.Indices2Offset(nd2.Indices, left.Shape, left.Strides);
+                        return left.GetAt(idx0);
+                    }
+                    else
+                    {
+                        nd2.Indices[axis] -= dim;
+                        int idx0 = Utils.Indices2Offset(nd2.Indices, right.Shape, right.Strides);
+                        return right.GetAt(idx0);
+                    }
+                };
+
+                nd2.setAt = (idx, v) =>
+                {
+                    Utils.InputIndicesFromIndex(idx, nd2.Shape, nd2.Indices);
+                    if (nd2.Indices[axis] < dim)
+                    {
+                        int idx0 = Utils.Indices2Offset(nd2.Indices, left.Shape, left.Strides);
+                        left.SetAt(idx0, v);
+                    }
+                    else
+                    {
+                        nd2.Indices[axis] -= dim;
+                        int idx0 = Utils.Indices2Offset(nd2.Indices, right.Shape, right.Strides);
+                        right.SetAt(idx0, v);
+                    }
+                };
+
+                return nd2;
+            };
+
+            return new NDview<Type>(fnc);
+        }
+
+        public static NDview<Type> HConcat<Type>(NDview<Type> a, NDview<Type> b) => Concatene(a, b, a.Shape.Length - 1);
+        public static NDview<Type> VConcat<Type>(NDview<Type> a, NDview<Type> b) => Concatene(a, b);
+
+        public static List<(NDarray<Type>, NDarray<Type>)> BatchIterator<Type>(NDarray<Type> X, NDarray<Type> Y, int batchsize = 64, bool shuffle = false)
+        {
+            int dim0 = X.Shape[0];
+            if (Y.Shape[0] != dim0)
+                throw new ArgumentException();
+
+            if (batchsize > dim0)
+                batchsize = dim0;
+
+            List<(NDarray<Type>, NDarray<Type>)> allBatch = new List<(NDarray<Type>, NDarray<Type>)>();
+            int nb = dim0 / batchsize;
+
+            var ltIdx = new Queue<int>(Enumerable.Range(0, dim0));
+            if (shuffle)
+                ltIdx = new Queue<int>(Enumerable.Range(0, dim0).OrderBy(t => Utils.GetRandom.NextDouble()));
+
+            var xshape = X.Shape.ToArray();
+            var yshape = Y.Shape.ToArray();
+            xshape[0] = batchsize;
+            yshape[0] = batchsize;
+
+            for (int k = 0; k < nb; ++k)
+            {
+                var xarr = new NDarray<Type>(xshape);
+                var yarr = new NDarray<Type>(yshape);
+                var xdata = new Type[xarr.Count];
+                var ydata = new Type[yarr.Count];
+                xarr.SetData(xdata);
+                yarr.SetData(ydata);
+                for (int i = 0; i < batchsize; ++i)
+                {
+                    int idx = ltIdx.Dequeue();
+                    X[idx].GetData.CopyTo(xdata, i * xarr.Strides[0]);
+                    Y[idx].GetData.CopyTo(ydata, i * yarr.Strides[0]);
+                }
+
+                allBatch.Add((xarr, yarr));
+            }
+
+            return allBatch;
+        }
     }
 }
