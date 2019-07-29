@@ -151,6 +151,16 @@ namespace NDarrayLib
         public NDview<Type> Transpose(int[] table) => ND.Transpose(View, table);
         public NDview<Type> T => ND.Transpose<Type>(this);
 
+        public NDview<U> Cast<U>() => View.Cast<U>();
+        public NDarray<U> CastCopy<U>() => View.Cast<U>().Copy;
+
+        public NDview<Type> Sum(int axis = -1, bool keepdims = false) => View.Sum(axis, keepdims);
+        public NDview<Type> Prod(int axis = -1, bool keepdims = false) => View.Prod(axis, keepdims);
+        public NDview<Type> Mean(int axis = -1, bool keepdims = false) => View.Mean(axis, keepdims);
+
+        public double SumAll() => View.SumAll();
+        public double MeanAll() => View.MeanAll();
+
         public override string ToString()
         {
             var nargs = new int[Shape.Length];
@@ -163,7 +173,7 @@ namespace NDarrayLib
             nbGet = nbGetData = 0;
             List<Type> listValues = GetData.ToList();
 
-            if (Utils.DebugNumPy)
+            if (Utils.IsDebugLvl1)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine($"Class:{GetType().Name,-20}");
@@ -207,9 +217,10 @@ namespace NDarrayLib
                 var val = listValues[idx];
                 result += string.Format(fmt, val);
                 result += idx % last == last - 1 ? after + "\n" : "";
+                result += after.Length > 1 && idx != Count - 1 ? "\n" : "";
             }
 
-            if (!Utils.DebugNumPy)
+            if (Utils.IsDebugNo)
             {
                 result = result.Substring(0, result.Length - 1);
             }

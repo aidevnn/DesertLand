@@ -10,7 +10,12 @@ namespace NDarrayLib
         public static string Glue<T>(this IEnumerable<T> ts, string sep = " ", string format = "{0}") =>
             string.Join(sep, ts.Select(a => string.Format(format, a)));
 
-        public static bool DebugNumPy = false;
+        public const int DbgNo = 0, DbgLvl1 = 0b1, DbgLvl2 = 0b10, DbgLvlAll = 0b11;
+        public static int DebugNumpy = DbgNo;
+
+        public static bool IsDebugNo => DebugNumpy == DbgNo;
+        public static bool IsDebugLvl1 => (DebugNumpy & DbgLvl1) == DbgLvl1;
+        public static bool IsDebugLvl2 => (DebugNumpy & DbgLvl2) == DbgLvl2;
 
         private static readonly Random random = new Random(123);
         //private static readonly Random random = new Random((int)DateTime.Now.Ticks);

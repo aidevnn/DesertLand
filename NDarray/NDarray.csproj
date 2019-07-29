@@ -39,7 +39,8 @@
     <Compile Include="Operations.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NDview.cs" />
-    <Compile Include="ND.cs" />
+    <Compile Include="ND.methods.cs" />
+    <Compile Include="ND.extended.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

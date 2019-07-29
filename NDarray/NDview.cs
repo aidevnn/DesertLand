@@ -9,7 +9,7 @@ namespace NDarrayLib
         {
             fnc = () =>
             {
-                if (Utils.DebugNumPy) Console.WriteLine($"NDarray {nDarray.GetHashCode()}");
+                if (Utils.IsDebugLvl2) Console.WriteLine($"NDarray {nDarray.GetHashCode()}");
                 return nDarray;
             };
         }
@@ -25,6 +25,9 @@ namespace NDarrayLib
 
         public NDarray<Type> Copy => fnc().Copy;
 
+        public int[] Shape => BaseArray.Shape;
+        public int[] Strides => BaseArray.Strides;
+        public int Count => BaseArray.Count;
         public Type GetAt(int idx) => BaseArray.GetAt(idx);
         public void SetAt(int idx, Type v) => BaseArray.SetAt(idx, v);
 
@@ -33,6 +36,15 @@ namespace NDarrayLib
         public NDview<Type> Reshape(params int[] shape) => ND.Reshape(this, shape);
         public NDview<Type> Transpose(int[] table) => ND.Transpose(this, table);
         public NDview<Type> T => ND.Transpose(this);
+
+        public NDview<U> Cast<U>() => ND.Cast<Type, U>(this);
+
+        public NDview<Type> Sum(int axis = -1, bool keepdims = false) => ND.SumAxis(this, axis, keepdims);
+        public NDview<Type> Prod(int axis = -1, bool keepdims = false) => ND.ProdAxis(this, axis, keepdims);
+        public NDview<Type> Mean(int axis = -1, bool keepdims = false) => ND.MeanAxis(this, axis, keepdims);
+
+        public double SumAll() => NDarray<double>.OpsT.Cast(Sum().GetAt(0));
+        public double MeanAll() => NDarray<double>.OpsT.Cast(Prod().GetAt(0));
 
         public static implicit operator NDarray<Type>(NDview<Type> nDview) => nDview.Copy;
 
