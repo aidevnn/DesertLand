@@ -11,11 +11,11 @@ namespace DesertLand
     {
         static void Test1()
         {
-            NDarray<int> a = ND.Arange(15).Reshape(5, 3);
+            var a = ND.Arange(15).Reshape(5, 3);
             var b = ND.Arange(4, 3);
+            var c = a + 2 * b;
             Console.WriteLine(a);
             Console.WriteLine(b);
-            var c = a + 2 * b;
             Console.WriteLine(c);
         }
 
@@ -127,7 +127,10 @@ namespace DesertLand
 
         public static void Main(string[] args)
         {
-            TestXor<double>();
+            //Utils.DebugNumpy = Utils.DbgLvlAll;
+            //Test1();
+
+            //TestXor<double>();
         }
     }
 }
