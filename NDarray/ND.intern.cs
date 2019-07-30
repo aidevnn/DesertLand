@@ -150,12 +150,6 @@ namespace NDarrayLib
         {
             if (Utils.IsDebugLvl2) Console.WriteLine("TensorDot");
 
-            if (!left.OwnData)
-                left = left.Copy;
-
-            if (!right.OwnData)
-                right = right.Copy;
-
             (int[] lshape, int[] rshape, int[] shape, int[] idxInfos) = Utils.PrepareDot(left.Shape, right.Shape);
             var nd0 = new NDarray<Type>(shape);
 
