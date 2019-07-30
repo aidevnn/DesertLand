@@ -127,8 +127,8 @@ namespace DesertLand
 
         public static void Main(string[] args)
         {
-            //Utils.DebugNumpy = Utils.DbgLvlAll;
-            //Test1();
+            Utils.DebugNumpy = Utils.DbgLvlAll;
+            Test1();
 
             //TestXor<double>();
         }

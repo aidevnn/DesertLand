@@ -123,7 +123,6 @@ namespace NDarrayLib
                 int offset = k * Strides[0];
                 nd0.getAt = i => getAt(i + offset);
                 nd0.setAt = (i, v) => setAt(i + offset, v);
-                nd0.SetData(nd0.GetData);
                 return nd0;
             }
         }

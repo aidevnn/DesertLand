@@ -3,6 +3,7 @@ namespace NDarrayLib
 {
     internal delegate NDarray<Type> Fnc<Type>();
 
+    // Lazy evaluation
     public struct NDview<Type>
     {
         internal NDview(NDarray<Type> nDarray)
