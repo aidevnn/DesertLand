@@ -4,7 +4,7 @@ namespace NDarrayLib
 {
     public abstract class Operations<Type>
     {
-        public Type One, Zero, Epsilon;
+        public Type One, Zero, Epsilon, Minvalue, Maxvalue;
         public string dtype;
         public abstract Type Neg(Type a);
         public abstract Type Add(Type a, Type b);
@@ -42,7 +42,7 @@ namespace NDarrayLib
 
     public class OpsInt : Operations<int>
     {
-        public OpsInt() { One = 1; Zero = 0; Epsilon = 0; dtype = "np.int64"; }
+        public OpsInt() { One = 1; Zero = 0; Epsilon = 0; dtype = "np.int64"; Minvalue = int.MinValue; Maxvalue = int.MaxValue; }
         public override int Neg(int a) => -a;
         public override int Add(int a, int b) => a + b;
         public override int Sub(int a, int b) => a - b;
@@ -71,7 +71,7 @@ namespace NDarrayLib
 
     public class OpsFloat : Operations<float>
     {
-        public OpsFloat() { One = 1; Zero = 0; Epsilon = 1e-6f; dtype = "np.float32"; }
+        public OpsFloat() { One = 1; Zero = 0; Epsilon = 1e-6f; dtype = "np.float32"; Minvalue = float.MinValue; Maxvalue = float.MaxValue; }
         public override float Neg(float a) => -a;
         public override float Add(float a, float b) => a + b;
         public override float Sub(float a, float b) => a - b;
@@ -99,7 +99,7 @@ namespace NDarrayLib
 
     public class OpsDouble : Operations<double>
     {
-        public OpsDouble() { One = 1; Zero = 0; Epsilon = 1e-6; dtype = "np.float64"; }
+        public OpsDouble() { One = 1; Zero = 0; Epsilon = 1e-6; dtype = "np.float64"; Minvalue = double.MinValue; Maxvalue = double.MaxValue; }
         public override double Neg(double a) => -a;
         public override double Add(double a, double b) => a + b;
         public override double Sub(double a, double b) => a - b;

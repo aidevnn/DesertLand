@@ -5,6 +5,11 @@ using System.Text;
 
 namespace NDarrayLib
 {
+    //static class NbGet
+    //{
+    //    public static int Call, Data;
+    //}
+
     public class NDarray<Type>
     {
         public static Operations<Type> OpsT;
@@ -25,11 +30,10 @@ namespace NDarrayLib
         public int[] Strides { get; set; }
         public int[] Indices { get; set; }
         public int Count { get; set; }
+        public bool OwnData { get; set; } = true;
 
         internal Func<int, Type> getAt;
         internal Action<int, Type> setAt;
-
-        static int nbGet = 0, nbGetData = 0;
 
         internal NDarray(Type v0, int[] shape)
         {
@@ -96,15 +100,16 @@ namespace NDarrayLib
             Indices = new int[Shape.Length];
             Count = Utils.ArrMul(Shape);
 
-            getAt = idx => OpsT.Zero;
-            setAt = (idx, v) => { getAt = i => v; };
+            Type[] data = Enumerable.Repeat(OpsT.Zero, Count).ToArray();
+            SetData(data);
         }
 
         public Type GetAt(int idx)
         {
-            ++nbGet;
+            //++NbGet.Call;
             return getAt(idx);
         }
+
         public void SetAt(int idx, Type v) => setAt(idx, v);
 
         public void SetData(Type[] data)
@@ -112,9 +117,10 @@ namespace NDarrayLib
             if (Count != data.Length)
                 throw new Exception();
 
+            OwnData = true;
             getAt = idx =>
             {
-                ++nbGetData;
+                //++NbGet.Data;
                 return data[idx];
             };
             setAt = (idx, v) => data[idx] = v;
@@ -147,6 +153,7 @@ namespace NDarrayLib
 
         public NDview<Type> View => new NDview<Type>(this);
 
+        public NDview<Type> Round(int dec = 0) => ND.Round(View, dec);
         public NDview<Type> Reshape(params int[] shape) => ND.Reshape(View, shape);
         public NDview<Type> Transpose(int[] table) => ND.Transpose(View, table);
         public NDview<Type> T => ND.Transpose<Type>(this);
@@ -159,6 +166,7 @@ namespace NDarrayLib
         public NDview<Type> Mean(int axis = -1, bool keepdims = false) => View.Mean(axis, keepdims);
 
         public double SumAll() => View.SumAll();
+        public double ProdAll() => View.ProdAll();
         public double MeanAll() => View.MeanAll();
 
         public override string ToString()
@@ -170,7 +178,7 @@ namespace NDarrayLib
             var last = strides.Length == 1 ? Count : strides[strides.Length - 2];
             string before, after;
 
-            nbGet = nbGetData = 0;
+            //NbGet.Call = NbGet.Data = 0;
             List<Type> listValues = GetData.ToList();
 
             if (Utils.IsDebugLvl1)
@@ -180,21 +188,22 @@ namespace NDarrayLib
                 if (Shape.Length > 1 || Shape[0] != 1)
                 {
                     sb.AppendLine($"Shape:({Shape.Glue()}) Version:{GetHashCode(),10}");
-                    //sb.AppendLine($"Strides:({Strides.Glue()})");
+                    sb.AppendLine($"Strides:({Strides.Glue()})");
+                    sb.AppendLine($"OwnData:({OwnData})");
                 }
 
                 string dbg = $" : np.array([{listValues.Glue(",")}], dtype={OpsT.dtype}).reshape({Shape.Glue(",")})";
                 var nd = $"NDArray<{typeof(Type).Name}>";
                 sb.AppendLine($"{nd,-20} {Shape.Glue("x")}{dbg}");
-                sb.AppendLine($"NB Get:{nbGetData} / {nbGet}");
+                //sb.AppendLine($"NB Get:{NbGet.Data} / {NbGet.Call}");
                 Console.WriteLine(sb);
             }
 
             var ml0 = listValues.Select(v => $"{v}").Max(v => v.Length);
-            var ml1 = listValues.Select(v => $"{v:F3}").Max(v => v.Length);
+            var ml1 = listValues.Select(v => $"{v:F8}").Max(v => v.Length);
             string fmt = $"{{0,{ml0 + 2}}}";
             if (ml0 > ml1 + 3)
-                fmt = $"{{0,{ml1 + 2}:F3}}";
+                fmt = $"{{0,{ml1 + 2}:F8}}";
 
             for (int idx = 0; idx < Count; ++idx)
             {

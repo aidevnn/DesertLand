@@ -13,12 +13,13 @@ namespace NDarrayLib
         public const int DbgNo = 0, DbgLvl1 = 0b1, DbgLvl2 = 0b10, DbgLvlAll = 0b11;
         public static int DebugNumpy = DbgNo;
 
+        public static int NbDecimales = 8;
         public static bool IsDebugNo => DebugNumpy == DbgNo;
         public static bool IsDebugLvl1 => (DebugNumpy & DbgLvl1) == DbgLvl1;
         public static bool IsDebugLvl2 => (DebugNumpy & DbgLvl2) == DbgLvl2;
 
-        //private static readonly Random random = new Random(123);
-        private static readonly Random random = new Random((int)DateTime.Now.Ticks);
+        private static readonly Random random = new Random(123);
+        //private static readonly Random random = new Random((int)DateTime.Now.Ticks);
         
         public static Random GetRandom => random;
 
@@ -126,6 +127,17 @@ namespace NDarrayLib
             }
 
             return nshape.ToArray();
+        }
+
+        public static (int[], int[]) PrepareArgMinmax(int[] shape, int axis)
+        {
+            if (axis < 0 || axis >= shape.Length)
+                throw new ArgumentException("Bad axis for ArgMinMax");
+
+            var ishape = shape.ToArray();
+            ishape[axis] = 1;
+            var nshape = shape.Select((v, i) => (v, i)).Where(t => t.i != axis).Select(t => t.v).ToArray();
+            return (ishape, nshape);
         }
 
         public static (int[], int[], int[], int[]) PrepareDot(int[] shape0, int[] shape1)

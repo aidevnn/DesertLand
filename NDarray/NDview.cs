@@ -44,7 +44,8 @@ namespace NDarrayLib
         public NDview<Type> Mean(int axis = -1, bool keepdims = false) => ND.MeanAxis(this, axis, keepdims);
 
         public double SumAll() => NDarray<double>.OpsT.Cast(Sum().GetAt(0));
-        public double MeanAll() => NDarray<double>.OpsT.Cast(Prod().GetAt(0));
+        public double ProdAll() => NDarray<double>.OpsT.Cast(Prod().GetAt(0));
+        public double MeanAll() => NDarray<double>.OpsT.Cast(Mean().GetAt(0));
 
         public static implicit operator NDarray<Type>(NDview<Type> nDview) => nDview.Copy;
 

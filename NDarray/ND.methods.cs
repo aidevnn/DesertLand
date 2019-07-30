@@ -25,6 +25,20 @@ namespace NDarrayLib
             return new NDarray<Type>(data: data, shape: shape);
         }
 
+        public static NDarray<Type> CreateNDarray<Type>(Type[] data, params int[] shape) => new NDarray<Type>(data: data, shape: shape);
+        public static NDarray<Type> CreateNDarray<Type>(Type[,] data)
+        {
+            int dim0 = data.GetLength(0);
+            int dim1 = data.GetLength(1);
+
+            Type[] data0 = new Type[dim0 * dim1];
+            for (int i = 0; i < dim0; ++i)
+                for (int j = 0; j < dim1; ++j)
+                    data0[i * dim1 + j] = data[i, j];
+
+            return CreateNDarray(data0, new int[] { dim0, dim1 });
+        }
+
         public static NDview<Type> Reshape<Type>(NDview<Type> nDview, params int[] shape)
         {
             Fnc<Type> fnc = () =>
@@ -36,7 +50,8 @@ namespace NDarrayLib
                 var nd0 = new NDarray<Type>(nshape)
                 {
                     getAt = i => nDarray.GetAt(i),
-                    setAt = (i, v) => nDarray.SetAt(i, v)
+                    setAt = (i, v) => nDarray.SetAt(i, v),
+                    OwnData = false
                 };
                 return nd0;
             };
@@ -57,7 +72,8 @@ namespace NDarrayLib
                 var nd0 = new NDarray<Type>(shape: nshape, strides: nstrides)
                 {
                     getAt = idx0 => nDarray.GetAt(Utils.GetNewIndex(idx0, nshape, nstrides)),
-                    setAt = (idx0, v) => nDarray.SetAt(Utils.GetNewIndex(idx0, nshape, nstrides), v)
+                    setAt = (idx0, v) => nDarray.SetAt(Utils.GetNewIndex(idx0, nshape, nstrides), v),
+                    OwnData = false
                 };
                 return nd0;
             };
@@ -72,7 +88,11 @@ namespace NDarrayLib
                 if (Utils.IsDebugLvl2) Console.WriteLine($"ApplyOps {func.Method.Name}");
 
                 var nDarray = nDview.fnc();
-                var nd0 = new NDarray<V>(shape: nDarray.Shape,strides: nDarray.Strides) { getAt = i => func(nDarray.GetAt(i))};
+                var nd0 = new NDarray<V>(shape: nDarray.Shape, strides: nDarray.Strides)
+                {
+                    getAt = i => func(nDarray.GetAt(i)),
+                    OwnData = false
+                };
                 return nd0;
             };
             return new NDview<V>(fnc);
@@ -93,6 +113,7 @@ namespace NDarrayLib
                 var left = fleft.fnc();
                 var right = fright.fnc();
                 var nd0 = new NDarray<V>(shape: Utils.BroadCastShapes(left.Shape, right.Shape));
+                nd0.OwnData = false;
                 nd0.getAt = index =>
                 {
                     Utils.InputIndicesFromIndex(index, nd0.Shape, nd0.Indices);
@@ -110,6 +131,45 @@ namespace NDarrayLib
                 return nd0;
             };
             return new NDview<V>(fnc);
+        }
+
+        internal static NDview<int> ArgMinMax<Type>(NDview<Type> nDview, int axis, Func<Type,Type,Type> func, Type tmp)
+        {
+            Fnc<int> fnc = () =>
+            {
+                if (Utils.IsDebugLvl2) Console.WriteLine($"ArgMinMax {func.Method.Name}");
+
+                var nDarray = nDview.fnc();
+                (int[] ishape, int[] nshape) = Utils.PrepareArgMinmax(nDarray.Shape, axis);
+                int[] indices = new int[ishape.Length];
+                var nd0 = new NDarray<int>(nshape);
+                nd0.OwnData = false;
+                int nb = nDarray.Shape[axis];
+
+                nd0.getAt = idx =>
+                {
+                    Type valBest = tmp;
+                    int idxBest = 0;
+                    Utils.InputIndicesFromIndex(idx, ishape, indices);
+                    for (int k = 0; k < nb; ++k)
+                    {
+                        indices[axis] = k;
+                        var v = nDarray.GetAt(Utils.Indices2Offset(indices, nDarray.Shape, nDarray.Strides));
+                        var v0 = func(v, valBest);
+                        if (!valBest.Equals(v0))
+                        {
+                            idxBest = k;
+                            valBest = v0;
+                        }
+                    }
+
+                    return idxBest;
+                };
+
+                return nd0;
+            };
+
+            return new NDview<int>(fnc);
         }
 
         public static NDview<Type> AxisOps<Type>(NDview<Type> nDview, int axis, bool keepdims, Func<Type, Type, Type> func, Type neutre, bool mean = false)
@@ -136,6 +196,7 @@ namespace NDarrayLib
                     var NShape = Utils.PrepareSumProd(nDarray.Shape, axis, true);
                     var NIndices = new int[NShape.Length];
                     Type nb = mean ? NDarray<Type>.OpsT.Cast(nDarray.Shape[axis]) : NDarray<Type>.OpsT.One;
+                    nd0.OwnData = false;
                     nd0.getAt = idx0 =>
                     {
                         Type res = neutre;
@@ -167,8 +228,11 @@ namespace NDarrayLib
 
                 var left = a.fnc();
                 var right = b.fnc();
-                left.SetData(left.GetData);
-                right.SetData(right.GetData);
+                if (!left.OwnData)
+                    left = left.Copy;
+
+                if (!right.OwnData)
+                    right = right.Copy;
 
                 (int[] lshape, int[] rshape, int[] shape, int[] idxInfos) = Utils.PrepareDot(left.Shape, right.Shape);
                 var nd0 = new NDarray<Type>(shape);
@@ -265,7 +329,7 @@ namespace NDarrayLib
             return new NDview<Type>(fnc);
         }
 
-        public static List<(NDarray<Type>, NDarray<Type>)> BatchIterator<Type>(NDarray<Type> X, NDarray<Type> Y, int batchsize = 64, bool shuffle = false)
+        public static List<(NDarray<Type>, NDarray<Type>)> BatchIterator<Type>(NDarray<Type> X, NDarray<Type> Y, int batchsize = 64, bool shuffle = true)
         {
             int dim0 = X.Shape[0];
             if (Y.Shape[0] != dim0)

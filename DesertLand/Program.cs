@@ -1,5 +1,8 @@
 ﻿using System;
-
+using System.Diagnostics;
+using DesertLand.Layers;
+using DesertLand.Losses;
+using DesertLand.Optimizers;
 using NDarrayLib;
 
 namespace DesertLand
@@ -93,12 +96,38 @@ namespace DesertLand
                 //Console.WriteLine(ND.HConcat<int>(batch.Item1, batch.Item2));
         }
 
+        static void TestXor<Type>()
+        {
+            Console.WriteLine($"Hello World! Xor MLP. Backend NDarray<{typeof(Type).Name}>");
+
+            Utils.DebugNumpy = Utils.DbgNo;
+
+            var Xdata = ND.CreateNDarray(new double[4, 2] { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }).CastCopy<Type>();
+            var Ydata = ND.CreateNDarray(new double[4, 1] { { 0 }, { 1 }, { 1 }, { 0 } }).CastCopy<Type>();
+
+            var net = new Network<Type>(new SGD<Type>(0.2), new SquareLoss<Type>(), new RoundAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(2, 8));
+            net.AddLayer(new TanhLayer<Type>());
+            net.AddLayer(new DenseLayer<Type>(1));
+            net.AddLayer(new SigmoidLayer<Type>());
+
+            net.Summary();
+
+            var sw = Stopwatch.StartNew();
+            net.Fit(Xdata, Ydata, 1000, 4, 50);
+            Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
+
+            Console.WriteLine("Prediction");
+            NDarray<Type> pred = net.Predict(Xdata).Round(6);
+            for (int k = 0; k < Xdata.Shape[0]; ++k)
+            {
+                Console.WriteLine($"{Xdata[k]} = {Ydata[k]} -> {pred[k]}");
+            }
+        }
+
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
-            Utils.DebugNumpy = Utils.DbgLvl1;
-
+            TestXor<double>();
         }
     }
 }

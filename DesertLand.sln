@@ -9,15 +9,25 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x86.ActiveCfg = Debug|x86
 		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x86.Build.0 = Debug|x86
 		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x86.ActiveCfg = Release|x86
 		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x86.Build.0 = Release|x86
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x64.ActiveCfg = Debug|x64
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Debug|x64.Build.0 = Debug|x64
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x64.ActiveCfg = Release|x64
+		{24B89134-5926-4178-A28F-5CDC4F9AE285}.Release|x64.Build.0 = Release|x64
 		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x86.ActiveCfg = Debug|x86
 		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x86.Build.0 = Debug|x86
 		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x86.ActiveCfg = Release|x86
 		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x86.Build.0 = Release|x86
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x64.ActiveCfg = Debug|x64
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Debug|x64.Build.0 = Debug|x64
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x64.ActiveCfg = Release|x64
+		{FCAC446D-EFBA-433D-9134-90AC76DEB602}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 EndGlobal

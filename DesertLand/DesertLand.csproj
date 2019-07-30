@@ -30,18 +30,60 @@
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Activations\IActivation.cs" />
+    <Compile Include="Activations\SigmoidActivation.cs" />
+    <Compile Include="Activations\TanhActivation.cs" />
+    <Compile Include="Optimizers\IOptimizer.cs" />
+    <Compile Include="Optimizers\SGD.cs" />
+    <Compile Include="Layers\ILayer.cs" />
+    <Compile Include="Layers\ActivationLayer.cs" />
+    <Compile Include="Layers\DenseLayer.cs" />
+    <Compile Include="Losses\ILoss.cs" />
+    <Compile Include="Losses\SquareLoss.cs" />
+    <Compile Include="Losses\CrossEntropyLoss.cs" />
+    <Compile Include="Network.cs" />
+    <Compile Include="Losses\IAccuracy.cs" />
+    <Compile Include="Losses\RoundAccuracy.cs" />
+    <Compile Include="Losses\ArgmaxAccuracy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NDarray\NDarray.csproj">
       <Project>{FCAC446D-EFBA-433D-9134-90AC76DEB602}</Project>
       <Name>NDarray</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Activations\" />
+    <Folder Include="Optimizers\" />
+    <Folder Include="Layers\" />
+    <Folder Include="Losses\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
