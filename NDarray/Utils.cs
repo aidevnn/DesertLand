@@ -6,7 +6,6 @@ namespace NDarrayLib
 {
     public static class Utils
     {
-
         public static string Glue<T>(this IEnumerable<T> ts, string sep = " ", string format = "{0}") =>
             string.Join(sep, ts.Select(a => string.Format(format, a)));
 
@@ -18,9 +17,8 @@ namespace NDarrayLib
         public static bool IsDebugLvl1 => (DebugNumpy & DbgLvl1) == DbgLvl1;
         public static bool IsDebugLvl2 => (DebugNumpy & DbgLvl2) == DbgLvl2;
 
-        private static readonly Random random = new Random(123);
-        //private static readonly Random random = new Random((int)DateTime.Now.Ticks);
-        
+        //private static readonly Random random = new Random(123);
+        private static readonly Random random = new Random((int)DateTime.Now.Ticks);
         public static Random GetRandom => random;
 
         public static int ArrMul(int[] shape, int start = 0) => shape.Skip(start).Aggregate(1, (a, i) => a * i);

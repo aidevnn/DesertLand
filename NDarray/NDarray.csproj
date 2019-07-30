@@ -60,8 +60,9 @@
     <Compile Include="Operations.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NDview.cs" />
-    <Compile Include="ND.methods.cs" />
-    <Compile Include="ND.extended.cs" />
+    <Compile Include="ND.view.cs" />
+    <Compile Include="ND.method.cs" />
+    <Compile Include="ND.intern.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

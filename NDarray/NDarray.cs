@@ -5,11 +5,6 @@ using System.Text;
 
 namespace NDarrayLib
 {
-    //static class NbGet
-    //{
-    //    public static int Call, Data;
-    //}
-
     public class NDarray<Type>
     {
         public static Operations<Type> OpsT;
@@ -104,14 +99,6 @@ namespace NDarrayLib
             SetData(data);
         }
 
-        public Type GetAt(int idx)
-        {
-            //++NbGet.Call;
-            return getAt(idx);
-        }
-
-        public void SetAt(int idx, Type v) => setAt(idx, v);
-
         public void SetData(Type[] data)
         {
             if (Count != data.Length)
@@ -126,7 +113,7 @@ namespace NDarrayLib
             setAt = (idx, v) => data[idx] = v;
         }
 
-        public Type[] GetData => Enumerable.Range(0, Count).Select(GetAt).ToArray();
+        public Type[] GetData => Enumerable.Range(0, Count).Select(getAt).ToArray();
 
         public NDarray<Type> this[int k]
         {
@@ -134,8 +121,8 @@ namespace NDarrayLib
             {
                 var nd0 = new NDarray<Type>(Shape.Skip(1).ToArray());
                 int offset = k * Strides[0];
-                nd0.getAt = i => GetAt(i + offset);
-                nd0.setAt = (i, v) => SetAt(i + offset, v);
+                nd0.getAt = i => getAt(i + offset);
+                nd0.setAt = (i, v) => setAt(i + offset, v);
                 nd0.SetData(nd0.GetData);
                 return nd0;
             }

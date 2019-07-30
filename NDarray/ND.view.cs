@@ -6,6 +6,36 @@ namespace NDarrayLib
 {
     public static partial class ND
     {
+        public static NDview<Type> Reshape<Type>(NDview<Type> nDview, params int[] shape)
+            => new NDview<Type>(() => reshape(nDview.fnc(), shape));
+
+        public static NDview<Type> Transpose<Type>(NDview<Type> nDview, params int[] table)
+            => new NDview<Type>(() => transpose(nDview.fnc(), table));
+
+        public static NDview<V> ApplyOps<U, V>(NDview<U> nDview, Func<U, V> func)
+            => new NDview<V>(() => applyOps(nDview.fnc(), func));
+
+        internal static NDview<V> ApplyOpsLeft<U, V>(double left, Func<U, U, V> func, NDview<U> right)
+            => ApplyOps(right, x => func(NDarray<U>.OpsT.Cast(left), x));
+
+        internal static NDview<V> ApplyOpsRight<U, V>(NDview<U> left, Func<U, U, V> func, double right)
+            => ApplyOps(left, x => func(x, NDarray<U>.OpsT.Cast(right)));
+
+        public static NDview<V> ElementWiseOp<U, V>(NDview<U> left, NDview<U> right, Func<U, U, V> func)
+            => new NDview<V>(() => elementWiseOp(left.fnc(), right.fnc(), func));
+
+        internal static NDview<int> ArgMinMax<Type>(NDview<Type> nDview, int axis, Func<Type, Type, Type> func, Type tmp)
+            => new NDview<int>(() => argMinMax(nDview.fnc(), axis, func, tmp));
+
+        public static NDview<Type> AxisOps<Type>(NDview<Type> nDview, int axis, bool keepdims, Func<Type, Type, Type> func, Type neutre, bool mean = false)
+            => new NDview<Type>(() => axisOps(nDview.fnc(), axis, keepdims, func, neutre, mean));
+
+        public static NDview<Type> TensorDot<Type>(NDview<Type> a, NDview<Type> b)
+            => new NDview<Type>(() => tensorDot(a.fnc(), b.fnc()));
+
+        public static NDview<Type> Concatene<Type>(NDview<Type> a, NDview<Type> b, int axis = 0)
+            => new NDview<Type>(() => concatene(a.fnc(), b.fnc(), axis));
+
         public static NDview<Type> Neg<Type>(NDview<Type> nDview) => ApplyOps(nDview, NDarray<Type>.OpsT.Neg);
         public static NDview<Type> Abs<Type>(NDview<Type> nDview) => ApplyOps(nDview, NDarray<Type>.OpsT.Abs);
         public static NDview<Type> Exp<Type>(NDview<Type> nDview) => ApplyOps(nDview, NDarray<Type>.OpsT.Exp);

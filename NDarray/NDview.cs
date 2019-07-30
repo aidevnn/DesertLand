@@ -25,11 +25,7 @@ namespace NDarrayLib
 
         public NDarray<Type> Copy => fnc().Copy;
 
-        public int[] Shape => BaseArray.Shape;
-        public int[] Strides => BaseArray.Strides;
-        public int Count => BaseArray.Count;
-        public Type GetAt(int idx) => BaseArray.GetAt(idx);
-        public void SetAt(int idx, Type v) => BaseArray.SetAt(idx, v);
+        private Type GetAt(int idx) => BaseArray.getAt(idx);
 
         public override string ToString() => BaseArray.ToString();
 

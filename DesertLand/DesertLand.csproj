@@ -69,9 +69,7 @@
     <Compile Include="Losses\SquareLoss.cs" />
     <Compile Include="Losses\CrossEntropyLoss.cs" />
     <Compile Include="Network.cs" />
-    <Compile Include="Losses\IAccuracy.cs" />
-    <Compile Include="Losses\RoundAccuracy.cs" />
-    <Compile Include="Losses\ArgmaxAccuracy.cs" />
+    <Compile Include="Losses\Accuracy.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NDarray\NDarray.csproj">
