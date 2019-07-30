@@ -30,7 +30,6 @@ namespace NDarrayLib
             for (int k = 0; k < args.Length; ++k)
             {
                 var v = args[k];
-                if (v >= shape[k]) throw new ArgumentException();
                 idx += v * strides[k];
             }
 
