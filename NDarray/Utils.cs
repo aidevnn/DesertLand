@@ -24,7 +24,7 @@ namespace NDarrayLib
         public static int ArrMul(int[] shape, int start = 0) => shape.Skip(start).Aggregate(1, (a, i) => a * i);
         public static int[] Shape2Strides(int[] shape) => Enumerable.Range(0, shape.Length).Select(i => ArrMul(shape, i + 1)).ToArray();
 
-        public static int Indices2Offset(int[] args, int[] shape, int[] strides)
+        public static int Array2IntIndex(int[] args, int[] shape, int[] strides)
         {
             int idx = 0;
             for (int k = 0; k < args.Length; ++k)
@@ -37,7 +37,7 @@ namespace NDarrayLib
             return idx;
         }
 
-        public static void InputIndicesFromIndex(int idx, int[] shape, int[] indices)
+        public static void Int2ArrayIndex(int idx, int[] shape, int[] indices)
         {
 
             for (int k = shape.Length - 1; k >= 0; --k)
@@ -48,7 +48,7 @@ namespace NDarrayLib
             }
         }
 
-        public static int GetNewIndex(int idx0, int[] shape, int[] strides)
+        public static int Int2IntIndex(int idx0, int[] shape, int[] strides)
         {
             int idx1 = 0;
             for (int k = shape.Length - 1; k >= 0; --k)
