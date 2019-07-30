@@ -194,25 +194,11 @@ namespace NDarrayLib
 
         static NDarray<Type> concatene<Type>(NDarray<Type> left, NDarray<Type> right, int axis = 0)
         {
-            if (left.Shape.Length != right.Shape.Length)
-                throw new ArgumentException($"Cannot concat rank={left.Shape.Length} and rank={right.Shape.Length}");
+            if (Utils.IsDebugLvl2) Console.WriteLine("Concatene");
 
-            if (axis < 0 || axis >= left.Shape.Length)
-                throw new ArgumentException("Bad axis concatenation");
-
-            for (int k = 0; k < left.Shape.Length; ++k)
-            {
-                if (k == axis) continue;
-
-                if (left.Shape[k] != right.Shape[k])
-                    throw new ArgumentException($"Cannot concat ({left.Shape.Glue()}) and ({right.Shape.Glue()}) along axis={axis}");
-            }
-
-            int dim = left.Shape[axis];
-
-            var nshape = left.Shape.ToArray();
-            nshape[axis] += right.Shape[axis];
+            int[] nshape = Utils.PrepareConcatene(left.Shape, right.Shape, axis);
             var nd0 = new NDarray<Type>(shape: nshape);
+            int dim = left.Shape[axis];
 
             nd0.getAt = idx =>
             {

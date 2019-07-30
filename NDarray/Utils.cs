@@ -176,5 +176,26 @@ namespace NDarrayLib
             return (lshape, rshape, nshape, idxInfos);
         }
 
+        public static int[] PrepareConcatene(int[] shape0, int[] shape1, int axis)
+        {
+            if (shape0.Length != shape1.Length)
+                throw new ArgumentException($"Cannot concat rank={shape0.Length} and rank={shape1.Length}");
+
+            if (axis < 0 || axis >= shape0.Length)
+                throw new ArgumentException("Bad axis concatenation");
+
+            for (int k = 0; k < shape0.Length; ++k)
+            {
+                if (k == axis) continue;
+
+                if (shape0[k] != shape1[k])
+                    throw new ArgumentException($"Cannot concat ({shape0.Glue()}) and ({shape1.Glue()}) along axis={axis}");
+            }
+
+            var nshape = shape0.ToArray();
+            nshape[axis] += shape1[axis];
+
+            return nshape;
+        }
     }
 }
