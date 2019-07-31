@@ -24,16 +24,9 @@ namespace DesertLand.Layers
         public bool IsTraining { get; set; }
         public NDarray<Type> LayerInput { get; set; }
 
-        public NDarray<Type> Backward(NDarray<Type> accumGrad)
-        {
-            return accumGrad * activation.Grad(LayerInput);
-        }
+        public NDarray<Type> Backward(NDarray<Type> accumGrad) => accumGrad * activation.Grad(LayerInput);
 
-        public NDarray<Type> Forward(NDarray<Type> X, bool isTraining = true)
-        {
-            LayerInput = X.Copy;
-            return activation.Func(X);
-        }
+        public NDarray<Type> Forward(NDarray<Type> X, bool isTraining = true) => activation.Func(LayerInput = X.Copy);
 
         public void Initialize(IOptimizer<Type> optimizer) { }
 

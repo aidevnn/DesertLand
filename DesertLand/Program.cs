@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using DesertLand.Activations;
 using DesertLand.Layers;
 using DesertLand.Losses;
 using DesertLand.Optimizers;
@@ -106,15 +107,18 @@ namespace DesertLand
             var Ydata = ND.CreateNDarray(new double[4, 1] { { 0 }, { 1 }, { 1 }, { 0 } }).CastCopy<Type>();
 
             var net = new Network<Type>(new SGD<Type>(0.2), new SquareLoss<Type>(), new RoundAccuracy<Type>());
-            net.AddLayer(new DenseLayer<Type>(2, 8));
-            net.AddLayer(new TanhLayer<Type>());
-            net.AddLayer(new DenseLayer<Type>(1));
-            net.AddLayer(new SigmoidLayer<Type>());
+            net.AddLayer(new DenseLayer<Type>(2, 8, new TanhActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(1, new SigmoidActivation<Type>()));
+
+            //net.AddLayer(new DenseLayer<Type>(2, 8));
+            //net.AddLayer(new TanhLayer<Type>());
+            //net.AddLayer(new DenseLayer<Type>(1));
+            //net.AddLayer(new SigmoidLayer<Type>());
 
             net.Summary();
 
             var sw = Stopwatch.StartNew();
-            net.Fit(Xdata, Ydata, 1000, 4, 50);
+            net.Fit(Xdata, Ydata, 1000, 4, 500);
             Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
 
             Console.WriteLine("Prediction");
@@ -128,9 +132,9 @@ namespace DesertLand
         public static void Main(string[] args)
         {
             Utils.DebugNumpy = Utils.DbgLvlAll;
-            Test1();
+            //Test1();
 
-            //TestXor<double>();
+            TestXor<float>();
         }
     }
 }

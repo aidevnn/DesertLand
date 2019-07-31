@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DesertLand.Activations;
 using DesertLand.Optimizers;
 using NDarrayLib;
 
@@ -17,6 +18,20 @@ namespace DesertLand.Layers
             InputShape = new int[] { inputNodes };
         }
 
+        public DenseLayer(int outputNodes, IActivation<Type> activation) : this(outputNodes)
+        {
+            Name = $"DenseLayer-{activation.Name}";
+            activationLayer = new ActivationLayer<Type>(activation);
+        }
+
+        public DenseLayer(int inputNodes, int outputNodes, IActivation<Type> activation) : this(inputNodes, outputNodes)
+        {
+            Name = $"DenseLayer-{activation.Name}";
+            activationLayer = new ActivationLayer<Type>(activation);
+        }
+
+        private ActivationLayer<Type> activationLayer;
+
         public NDarray<Type> weights, biases;
         IOptimizer<Type> weightsOptmz, biasesOptmz;
 
@@ -31,6 +46,9 @@ namespace DesertLand.Layers
 
         public NDarray<Type> Backward(NDarray<Type> accumGrad)
         {
+            if (activationLayer != null)
+                accumGrad = activationLayer.Backward(accumGrad);
+
             NDarray<Type> W = weights.T;
             if (IsTraining)
             {
@@ -48,7 +66,12 @@ namespace DesertLand.Layers
         {
             IsTraining = isTraining;
             LayerInput = X.Copy;
-            return ND.TensorDot<Type>(X, weights) + biases;
+
+            NDarray<Type> X0 = ND.TensorDot<Type>(X, weights) + biases;
+            if (activationLayer == null)
+                return X0;
+
+            return activationLayer.Forward(X0);
         }
 
         public void Initialize(IOptimizer<Type> optimizer)

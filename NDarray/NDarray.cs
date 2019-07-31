@@ -105,11 +105,7 @@ namespace NDarrayLib
                 throw new Exception();
 
             OwnData = true;
-            getAt = idx =>
-            {
-                //++NbGet.Data;
-                return data[idx];
-            };
+            getAt = idx => data[idx];
             setAt = (idx, v) => data[idx] = v;
         }
 
@@ -139,13 +135,13 @@ namespace NDarrayLib
 
         public NDview<Type> View => new NDview<Type>(this);
 
+        public NDview<U> Cast<U>() => View.Cast<U>();
+        public NDarray<U> CastCopy<U>() => View.Cast<U>().Copy;
+
         public NDview<Type> Round(int dec = 0) => ND.Round(View, dec);
         public NDview<Type> Reshape(params int[] shape) => ND.Reshape(View, shape);
         public NDview<Type> Transpose(int[] table) => ND.Transpose(View, table);
         public NDview<Type> T => ND.Transpose<Type>(this);
-
-        public NDview<U> Cast<U>() => View.Cast<U>();
-        public NDarray<U> CastCopy<U>() => View.Cast<U>().Copy;
 
         public NDview<Type> Sum(int axis = -1, bool keepdims = false) => View.Sum(axis, keepdims);
         public NDview<Type> Prod(int axis = -1, bool keepdims = false) => View.Prod(axis, keepdims);
@@ -154,6 +150,25 @@ namespace NDarrayLib
         public double SumAll() => View.SumAll();
         public double ProdAll() => View.ProdAll();
         public double MeanAll() => View.MeanAll();
+
+        public static implicit operator NDview<Type>(NDarray<Type> nDarray) => nDarray.View;
+
+        public static NDview<Type> operator +(NDarray<Type> a, NDarray<Type> b) => ND.Add<Type>(a, b);
+        public static NDview<Type> operator +(double a, NDarray<Type> b) => ND.Add<Type>(a, b);
+        public static NDview<Type> operator +(NDarray<Type> a, double b) => ND.Add<Type>(a, b);
+
+        public static NDview<Type> operator -(NDarray<Type> a) => ND.Neg<Type>(a);
+        public static NDview<Type> operator -(NDarray<Type> a, NDarray<Type> b) => ND.Sub<Type>(a, b);
+        public static NDview<Type> operator -(double a, NDarray<Type> b) => ND.Sub<Type>(a, b);
+        public static NDview<Type> operator -(NDarray<Type> a, double b) => ND.Sub<Type>(a, b);
+
+        public static NDview<Type> operator *(NDarray<Type> a, NDarray<Type> b) => ND.Mul<Type>(a, b);
+        public static NDview<Type> operator *(double a, NDarray<Type> b) => ND.Mul<Type>(a, b);
+        public static NDview<Type> operator *(NDarray<Type> a, double b) => ND.Mul<Type>(a, b);
+
+        public static NDview<Type> operator /(NDarray<Type> a, NDarray<Type> b) => ND.Div<Type>(a, b);
+        public static NDview<Type> operator /(double a, NDarray<Type> b) => ND.Div<Type>(a, b);
+        public static NDview<Type> operator /(NDarray<Type> a, double b) => ND.Div<Type>(a, b);
 
         public override string ToString()
         {
@@ -164,7 +179,6 @@ namespace NDarrayLib
             var last = strides.Length == 1 ? Count : strides[strides.Length - 2];
             string before, after;
 
-            //NbGet.Call = NbGet.Data = 0;
             List<Type> listValues = GetData.ToList();
 
             if (Utils.IsDebugLvl1)
@@ -222,26 +236,5 @@ namespace NDarrayLib
 
             return result;
         }
-
-        public static implicit operator NDview<Type>(NDarray<Type> nDarray) => nDarray.View;
-
-        public static NDview<Type> operator +(NDarray<Type> a, NDarray<Type> b) => ND.Add<Type>(a, b);
-        public static NDview<Type> operator +(double a, NDarray<Type> b) => ND.Add<Type>(a, b);
-        public static NDview<Type> operator +(NDarray<Type> a, double b) => ND.Add<Type>(a, b);
-
-        public static NDview<Type> operator -(NDarray<Type> a) => ND.Neg<Type>(a);
-        public static NDview<Type> operator -(NDarray<Type> a, NDarray<Type> b) => ND.Sub<Type>(a, b);
-        public static NDview<Type> operator -(double a, NDarray<Type> b) => ND.Sub<Type>(a, b);
-        public static NDview<Type> operator -(NDarray<Type> a, double b) => ND.Sub<Type>(a, b);
-
-        public static NDview<Type> operator *(NDarray<Type> a, NDarray<Type> b) => ND.Mul<Type>(a, b);
-        public static NDview<Type> operator *(double a, NDarray<Type> b) => ND.Mul<Type>(a, b);
-        public static NDview<Type> operator *(NDarray<Type> a, double b) => ND.Mul<Type>(a, b);
-
-        public static NDview<Type> operator /(NDarray<Type> a, NDarray<Type> b) => ND.Div<Type>(a, b);
-        public static NDview<Type> operator /(double a, NDarray<Type> b) => ND.Div<Type>(a, b);
-        public static NDview<Type> operator /(NDarray<Type> a, double b) => ND.Div<Type>(a, b);
-
-
     }
 }
