@@ -74,11 +74,11 @@ namespace DesertLand
         public void Summary()
         {
             Console.WriteLine("Summary");
-            Console.WriteLine($"Input Shape:{layers[0].InputShape.Glue()}");
+            Console.WriteLine($"Input  Shape:{layers[0].InputShape.Glue()}");
             int tot = 0;
             foreach (var layer in layers)
             {
-                Console.WriteLine($"Layer: {layer.Name,-10} Parameters: {layer.Params,3} Nodes[In:{layer.InputShape.Glue(),2} -> Out:{layer.OutputShape.Glue()}]");
+                Console.WriteLine($"Layer: {layer.Name,-20} Parameters: {layer.Params,3} Nodes[In:{layer.InputShape.Glue(),2} -> Out:{layer.OutputShape.Glue()}]");
                 tot += layer.Params;
             }
 

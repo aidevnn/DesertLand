@@ -6,15 +6,6 @@ namespace NDarrayLib
     // Lazy evaluation
     public struct NDview<Type>
     {
-        internal NDview(NDarray<Type> nDarray)
-        {
-            fnc = () =>
-            {
-                if (Utils.IsDebugLvl2) Console.WriteLine($"NDarray {nDarray.GetHashCode()}");
-                return nDarray;
-            };
-        }
-
         internal NDview(Fnc<Type> fnc0)
         {
             fnc = fnc0;

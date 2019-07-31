@@ -133,7 +133,20 @@ namespace NDarrayLib
             }
         }
 
-        public NDview<Type> View => new NDview<Type>(this);
+        public NDview<Type> View
+        {
+            get
+            {
+                Fnc<Type> fnc = () =>
+                {
+                    if (Utils.IsDebugLvl2)
+                        Console.WriteLine($"NDarray {GetHashCode()}");
+                    return this;
+                };
+
+                return new NDview<Type>(fnc);
+            }
+        }
 
         public NDview<U> Cast<U>() => View.Cast<U>();
         public NDarray<U> CastCopy<U>() => View.Cast<U>().Copy;
