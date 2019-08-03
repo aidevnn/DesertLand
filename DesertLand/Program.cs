@@ -136,7 +136,7 @@ namespace DesertLand
 
             //TestXor<float>();
 
-            var a = ND.Uniform(1, 10, 4, 4);
+            var a = ND.Uniform<double>(1, 10, 4, 4);
             Console.WriteLine(a);
 
             var b = 3 * ND.Sq(a - 1) - 4;

@@ -7,10 +7,10 @@ namespace NDarrayLib
 {
     static class Counters
     {
-        public static int Stack, Data;
+        public static int MethCall, Data;
         public static void Reset()
         {
-            Stack = Data = 0;
+            MethCall = Data = 0;
         }
     }
 
@@ -138,7 +138,7 @@ namespace NDarrayLib
 
         public Type GetAt(int idx)
         {
-            ++Counters.Stack;
+            ++Counters.MethCall;
             return getAt(idx);
         }
 
@@ -234,7 +234,7 @@ namespace NDarrayLib
                 string dbg = $" : np.array([{listValues.Glue(",")}], dtype={OpsT.dtype}).reshape({Shape.Glue(",")})";
                 var nd = $"NDArray<{typeof(Type).Name}>";
                 sb.AppendLine($"{nd,-20} {Shape.Glue("x")}{dbg}");
-                sb.AppendLine($"Counters. Data:{Counters.Data} / Stack:{Counters.Stack}");
+                sb.AppendLine($"Counters. DataAccess:{Counters.Data} / MethCall:{Counters.MethCall}");
                 Console.WriteLine(sb);
             }
 
