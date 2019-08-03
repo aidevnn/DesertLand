@@ -30,6 +30,9 @@ namespace NDarrayLib
         public static NDview<Type> AxisOps<Type>(NDview<Type> nDview, int axis, bool keepdims, Func<Type, Type, Type> func, Type start, bool mean = false)
             => new NDview<Type>(() => axisOps(nDview.fnc(), axis, keepdims, func, start, mean));
 
+        public static NDview<Type> AxisCumOps<Type>(NDview<Type> nDview, int axis, Func<Type, Type, Type> func, Type start)
+            => new NDview<Type>(() => axisCumOps(nDview.fnc(), axis, func, start));
+
         public static NDview<Type> TensorDot<Type>(NDview<Type> a, NDview<Type> b)
             => new NDview<Type>(() => tensorDot(a.fnc(), b.fnc()));
 
@@ -87,6 +90,11 @@ namespace NDarrayLib
             => AxisOps(nDview, axis, keepdims, NDarray<Type>.OpsT.Min, NDarray<Type>.OpsT.Maxvalue);
         public static NDview<Type> MaxAxis<Type>(NDview<Type> nDview, int axis = -1, bool keepdims = false)
             => AxisOps(nDview, axis, keepdims, NDarray<Type>.OpsT.Max, NDarray<Type>.OpsT.Minvalue);
+
+        public static NDview<Type> CumSumAxis<Type>(NDview<Type> nDview, int axis = -1)
+            => AxisCumOps(nDview, axis, NDarray<Type>.OpsT.Add, NDarray<Type>.OpsT.Zero);
+        public static NDview<Type> CumProdAxis<Type>(NDview<Type> nDview, int axis = -1)
+            => AxisCumOps(nDview, axis, NDarray<Type>.OpsT.Mul, NDarray<Type>.OpsT.One);
 
         public static NDview<int> Argmin<Type>(NDview<Type> nDview, int axis) => ArgMinMax(nDview, axis, NDarray<Type>.OpsT.Min, NDarray<Type>.OpsT.Maxvalue);
         public static NDview<int> Argmax<Type>(NDview<Type> nDview, int axis) => ArgMinMax(nDview, axis, NDarray<Type>.OpsT.Max, NDarray<Type>.OpsT.Minvalue);

@@ -138,8 +138,15 @@ namespace DesertLand
 
             var a = ND.Uniform(1, 10, 4, 4);
             Console.WriteLine(a);
-            Console.WriteLine(a.Min(0));
-            Console.WriteLine(a.Min(1));
+
+            var b = 3 * ND.Sq(a - 1) - 4;
+            var c = 3 * ND.Sq(a - 1) - 4 * ND.Sqrt(a + 5);
+
+            Console.WriteLine(b);
+            Console.WriteLine(c);
+
+            //Console.WriteLine(a.Min(0));
+            //Console.WriteLine(a.Min(1));
 
         }
     }

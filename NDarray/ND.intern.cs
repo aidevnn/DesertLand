@@ -13,7 +13,7 @@ namespace NDarrayLib
             var nshape = Utils.PrepareReshape(nDarray.Shape, shape);
             var nd0 = new NDarray<Type>(nshape)
             {
-                getAt = i => nDarray.getAt(i),
+                getAt = i => nDarray.GetAt(i),
                 setAt = (i, v) => nDarray.setAt(i, v),
                 OwnData = false
             };
@@ -29,7 +29,7 @@ namespace NDarrayLib
             var nstrides = Utils.DoTranspose(nDarray.Strides, table);
             var nd0 = new NDarray<Type>(shape: nshape, strides: nstrides)
             {
-                getAt = idx0 => nDarray.getAt(Utils.Int2IntIndex(idx0, nshape, nstrides)),
+                getAt = idx0 => nDarray.GetAt(Utils.Int2IntIndex(idx0, nshape, nstrides)),
                 setAt = (idx0, v) => nDarray.setAt(Utils.Int2IntIndex(idx0, nshape, nstrides), v),
                 OwnData = false
             };
@@ -42,7 +42,7 @@ namespace NDarrayLib
 
             var nd0 = new NDarray<V>(shape: nDarray.Shape, strides: nDarray.Strides)
             {
-                getAt = i => func(nDarray.getAt(i)),
+                getAt = i => func(nDarray.GetAt(i)),
                 OwnData = false
             };
             return nd0;
@@ -63,8 +63,8 @@ namespace NDarrayLib
                     if (j >= 0) right.Indices[j] = nd0.Indices[k] % right.Shape[j];
                 }
 
-                var v0 = left.getAt(Utils.Array2IntIndex(left.Indices, left.Shape, left.Strides));
-                var v1 = right.getAt(Utils.Array2IntIndex(right.Indices, right.Shape, right.Strides));
+                var v0 = left.GetAt(Utils.Array2IntIndex(left.Indices, left.Shape, left.Strides));
+                var v1 = right.GetAt(Utils.Array2IntIndex(right.Indices, right.Shape, right.Strides));
                 return func(v0, v1);
             };
 
@@ -89,7 +89,7 @@ namespace NDarrayLib
                 for (int k = 0; k < nb; ++k)
                 {
                     indices[axis] = k;
-                    var v = nDarray.getAt(Utils.Array2IntIndex(indices, nDarray.Shape, nDarray.Strides));
+                    var v = nDarray.GetAt(Utils.Array2IntIndex(indices, nDarray.Shape, nDarray.Strides));
                     var v0 = func(v, valBest);
                     if (!valBest.Equals(v0))
                     {
@@ -115,7 +115,7 @@ namespace NDarrayLib
                 Type res = start;
                 Type nb = mean ? NDarray<Type>.OpsT.Cast(nDarray.Count) : NDarray<Type>.OpsT.One;
                 for (int idx = 0; idx < nDarray.Count; ++idx)
-                    res = func(res, nDarray.getAt(idx));
+                    res = func(res, nDarray.GetAt(idx));
 
                 res = NDarray<Type>.OpsT.Div(res, nb);
                 nd0.getAt = i => res;
@@ -135,10 +135,52 @@ namespace NDarrayLib
                     {
                         NIndices[axis] = k;
                         int idx1 = Utils.Array2IntIndex(NIndices, nDarray.Shape, nDarray.Strides);
-                        res = func(res, nDarray.getAt(idx1));
+                        res = func(res, nDarray.GetAt(idx1));
                     }
 
                     res = NDarray<Type>.OpsT.Div(res, nb);
+                    return res;
+                };
+            }
+
+            return nd0;
+        }
+
+        // the worst case of for data access
+        static NDarray<Type> axisCumOps<Type>(NDarray<Type> nDarray, int axis, Func<Type, Type, Type> func, Type start)
+        {
+            if (Utils.IsDebugLvl2) Console.WriteLine($"AxisCumOps {func.Method.Name}");
+
+            var nshape = Utils.PrepareCumSumProd(nDarray.Shape, axis);
+            var nd0 = new NDarray<Type>(nshape);
+            nd0.OwnData = false;
+
+            if (axis == -1)
+            {
+                nd0.getAt = idx0 =>
+                {
+                    Type res = start;
+                    for (int idx1 = 0; idx1 <= idx0; ++idx1)
+                        res = func(res, nDarray.GetAt(idx1));
+
+                    return res;
+                };
+            }
+            else
+            {
+                nd0.getAt = idx0 =>
+                {
+                    Type res = start;
+                    Utils.Int2ArrayIndex(idx0, nDarray.Shape, nDarray.Indices);
+                    int nb = nDarray.Indices[axis];
+
+                    for (int k = 0; k <= nb; ++k)
+                    {
+                        nDarray.Indices[axis] = k;
+                        int idx1 = Utils.Array2IntIndex(nDarray.Indices, nDarray.Shape, nDarray.Strides);
+                        res = func(res, nDarray.GetAt(idx1));
+                    }
+
                     return res;
                 };
             }
@@ -181,7 +223,7 @@ namespace NDarrayLib
 
                     int idxl = Utils.Array2IntIndex(leftArr.Indices, leftArr.Shape, leftArr.Strides);
                     int idxr = Utils.Array2IntIndex(rightArr.Indices, rightArr.Shape, rightArr.Strides);
-                    var prod = NDarray<Type>.OpsT.Mul(leftArr.getAt(idxl), rightArr.getAt(idxr));
+                    var prod = NDarray<Type>.OpsT.Mul(leftArr.GetAt(idxl), rightArr.GetAt(idxr));
                     sum = NDarray<Type>.OpsT.Add(sum, prod);
                 }
 
@@ -206,17 +248,17 @@ namespace NDarrayLib
                 if (nd0.Indices[axis] < dim)
                 {
                     int idx0 = Utils.Array2IntIndex(nd0.Indices, left.Shape, left.Strides);
-                    return left.getAt(idx0);
+                    return left.GetAt(idx0);
                 }
                 else
                 {
                     nd0.Indices[axis] -= dim;
                     int idx0 = Utils.Array2IntIndex(nd0.Indices, right.Shape, right.Strides);
-                    return right.getAt(idx0);
+                    return right.GetAt(idx0);
                 }
             };
 
-            nd0.SetData(nd0.GetData);
+            //nd0.SetData(nd0.GetData);
             return nd0;
         }
     }

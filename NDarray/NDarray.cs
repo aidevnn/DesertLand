@@ -5,6 +5,15 @@ using System.Text;
 
 namespace NDarrayLib
 {
+    static class Counters
+    {
+        public static int Stack, Data;
+        public static void Reset()
+        {
+            Stack = Data = 0;
+        }
+    }
+
     public class NDarray<Type>
     {
         public static Operations<Type> OpsT;
@@ -105,11 +114,15 @@ namespace NDarrayLib
                 throw new Exception();
 
             OwnData = true;
-            getAt = idx => data[idx];
+            getAt = idx =>
+            {
+                ++Counters.Data;
+                return data[idx];
+            };
             setAt = (idx, v) => data[idx] = v;
         }
 
-        public Type[] GetData => Enumerable.Range(0, Count).Select(getAt).ToArray();
+        public Type[] GetData => Enumerable.Range(0, Count).Select(GetAt).ToArray();
 
         public NDarray<Type> this[int k]
         {
@@ -117,10 +130,16 @@ namespace NDarrayLib
             {
                 var nd0 = new NDarray<Type>(Shape.Skip(1).ToArray());
                 int offset = k * Strides[0];
-                nd0.getAt = i => getAt(i + offset);
+                nd0.getAt = i => GetAt(i + offset);
                 nd0.setAt = (i, v) => setAt(i + offset, v);
                 return nd0;
             }
+        }
+
+        public Type GetAt(int idx)
+        {
+            ++Counters.Stack;
+            return getAt(idx);
         }
 
         public NDarray<Type> Copy
@@ -162,6 +181,9 @@ namespace NDarrayLib
         public NDview<Type> Min(int axis = -1, bool keepdims = false) => View.Min(axis, keepdims);
         public NDview<Type> Max(int axis = -1, bool keepdims = false) => View.Max(axis, keepdims);
 
+        public NDview<Type> CumSum(int axis = -1) => View.CumSum(axis);
+        public NDview<Type> CumProd(int axis = -1) => View.CumProd(axis);
+
         public double SumAll() => View.SumAll();
         public double ProdAll() => View.ProdAll();
         public double MeanAll() => View.MeanAll();
@@ -190,6 +212,8 @@ namespace NDarrayLib
             var nargs = new int[Shape.Length];
             var strides = Utils.Shape2Strides(Shape);
 
+            Counters.Reset();
+
             string result = "";
             var last = strides.Length == 1 ? Count : strides[strides.Length - 2];
             string before, after;
@@ -210,7 +234,7 @@ namespace NDarrayLib
                 string dbg = $" : np.array([{listValues.Glue(",")}], dtype={OpsT.dtype}).reshape({Shape.Glue(",")})";
                 var nd = $"NDArray<{typeof(Type).Name}>";
                 sb.AppendLine($"{nd,-20} {Shape.Glue("x")}{dbg}");
-                //sb.AppendLine($"NB Get:{NbGet.Data} / {NbGet.Call}");
+                sb.AppendLine($"Counters. Data:{Counters.Data} / Stack:{Counters.Stack}");
                 Console.WriteLine(sb);
             }
 

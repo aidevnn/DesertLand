@@ -126,6 +126,17 @@ namespace NDarrayLib
             return nshape.ToArray();
         }
 
+        public static int[] PrepareCumSumProd(int[] shape, int axis)
+        {
+            if (axis < -1 || axis >= shape.Length)
+                throw new ArgumentException("Bad axis for CumSumProd");
+
+            if (axis == -1)
+                return new int[] { ArrMul(shape) };
+
+            return shape;
+        }
+
         public static (int[], int[]) PrepareArgMinmax(int[] shape, int axis)
         {
             if (axis < 0 || axis >= shape.Length)
