@@ -104,7 +104,7 @@ namespace NDarrayLib
             return nd0;
         }
 
-        static NDarray<Type> axisOps<Type>(NDarray<Type> nDarray, int axis, bool keepdims, Func<Type, Type, Type> func, Type neutre, bool mean = false)
+        static NDarray<Type> axisOps<Type>(NDarray<Type> nDarray, int axis, bool keepdims, Func<Type, Type, Type> func, Type start, bool mean = false)
         {
             if (Utils.IsDebugLvl2) Console.WriteLine($"AxisOps {func.Method.Name}");
 
@@ -112,7 +112,7 @@ namespace NDarrayLib
             var nd0 = new NDarray<Type>(nshape);
             if (axis == -1)
             {
-                Type res = neutre;
+                Type res = start;
                 Type nb = mean ? NDarray<Type>.OpsT.Cast(nDarray.Count) : NDarray<Type>.OpsT.One;
                 for (int idx = 0; idx < nDarray.Count; ++idx)
                     res = func(res, nDarray.getAt(idx));
@@ -128,7 +128,7 @@ namespace NDarrayLib
                 nd0.OwnData = false;
                 nd0.getAt = idx0 =>
                 {
-                    Type res = neutre;
+                    Type res = start;
                     Utils.Int2ArrayIndex(idx0, NShape, NIndices);
 
                     for (int k = 0; k < nDarray.Shape[axis]; ++k)

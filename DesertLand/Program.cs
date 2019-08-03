@@ -134,7 +134,13 @@ namespace DesertLand
             Utils.DebugNumpy = Utils.DbgLvlAll;
             //Test1();
 
-            TestXor<float>();
+            //TestXor<float>();
+
+            var a = ND.Uniform(1, 10, 4, 4);
+            Console.WriteLine(a);
+            Console.WriteLine(a.Min(0));
+            Console.WriteLine(a.Min(1));
+
         }
     }
 }

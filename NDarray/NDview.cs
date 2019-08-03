@@ -30,6 +30,8 @@ namespace NDarrayLib
         public NDview<Type> Sum(int axis = -1, bool keepdims = false) => ND.SumAxis(this, axis, keepdims);
         public NDview<Type> Prod(int axis = -1, bool keepdims = false) => ND.ProdAxis(this, axis, keepdims);
         public NDview<Type> Mean(int axis = -1, bool keepdims = false) => ND.MeanAxis(this, axis, keepdims);
+        public NDview<Type> Min(int axis = -1, bool keepdims = false) => ND.MinAxis(this, axis, keepdims);
+        public NDview<Type> Max(int axis = -1, bool keepdims = false) => ND.MaxAxis(this, axis, keepdims);
 
         public double SumAll() => NDarray<double>.OpsT.Cast(Sum().GetAt(0));
         public double ProdAll() => NDarray<double>.OpsT.Cast(Prod().GetAt(0));

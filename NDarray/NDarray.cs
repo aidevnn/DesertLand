@@ -159,6 +159,8 @@ namespace NDarrayLib
         public NDview<Type> Sum(int axis = -1, bool keepdims = false) => View.Sum(axis, keepdims);
         public NDview<Type> Prod(int axis = -1, bool keepdims = false) => View.Prod(axis, keepdims);
         public NDview<Type> Mean(int axis = -1, bool keepdims = false) => View.Mean(axis, keepdims);
+        public NDview<Type> Min(int axis = -1, bool keepdims = false) => View.Min(axis, keepdims);
+        public NDview<Type> Max(int axis = -1, bool keepdims = false) => View.Max(axis, keepdims);
 
         public double SumAll() => View.SumAll();
         public double ProdAll() => View.ProdAll();
