@@ -8,23 +8,24 @@ namespace DesertLand.Layers
 {
     public class DenseLayer<Type> : ILayer<Type>
     {
-        public DenseLayer(int outputNodes)
+        public DenseLayer(int outputNodes, bool useBiases = true)
         {
+            this.useBiases = useBiases;
             OutputShape = new int[] { outputNodes };
         }
 
-        public DenseLayer(int inputNodes, int outputNodes) : this(outputNodes)
+        public DenseLayer(int inputNodes, int outputNodes, bool useBiases = true) : this(outputNodes, useBiases)
         {
             InputShape = new int[] { inputNodes };
         }
 
-        public DenseLayer(int outputNodes, IActivation<Type> activation) : this(outputNodes)
+        public DenseLayer(int outputNodes, IActivation<Type> activation, bool useBiases = true) : this(outputNodes, useBiases)
         {
             Name = $"DenseLayer-{activation.Name}";
             activationLayer = new ActivationLayer<Type>(activation);
         }
 
-        public DenseLayer(int inputNodes, int outputNodes, IActivation<Type> activation) : this(inputNodes, outputNodes)
+        public DenseLayer(int inputNodes, int outputNodes, IActivation<Type> activation, bool useBiases = true) : this(inputNodes, outputNodes, useBiases)
         {
             Name = $"DenseLayer-{activation.Name}";
             activationLayer = new ActivationLayer<Type>(activation);
@@ -32,13 +33,14 @@ namespace DesertLand.Layers
 
         private ActivationLayer<Type> activationLayer;
 
+        readonly bool useBiases = true;
         public NDarray<Type> weights, biases;
         IOptimizer<Type> weightsOptmz, biasesOptmz;
 
         public int[] InputShape { get; set; }
         public int[] OutputShape { get; set; }
 
-        public int Params => weights.Count + biases.Count;
+        public int Params => weights.Count + (useBiases ? biases.Count : 0);
 
         public string Name { get; set; } = "DenseLayer";
         public bool IsTraining { get; set; }
@@ -53,10 +55,13 @@ namespace DesertLand.Layers
             if (IsTraining)
             {
                 var gW = ND.TensorDot(LayerInput.T, accumGrad);
-                var gw0 = accumGrad.Sum(0, true);
-
                 weights = weightsOptmz.Update(weights, gW);
-                biases = biasesOptmz.Update(biases, gw0);
+
+                if (useBiases)
+                {
+                    var gw0 = accumGrad.Sum(0, true);
+                    biases = biasesOptmz.Update(biases, gw0);
+                }
             }
 
             return ND.TensorDot<Type>(accumGrad, W);
@@ -67,7 +72,7 @@ namespace DesertLand.Layers
             IsTraining = isTraining;
             LayerInput = X.Copy;
 
-            NDarray<Type> X0 = ND.TensorDot<Type>(X, weights) + biases;
+            NDarray<Type> X0 = useBiases ? ND.TensorDot<Type>(X, weights) + biases : ND.TensorDot<Type>(X, weights);
             if (activationLayer == null)
                 return X0;
 
@@ -77,12 +82,15 @@ namespace DesertLand.Layers
         public void Initialize(IOptimizer<Type> optimizer)
         {
             weightsOptmz = optimizer.Clone();
-            biasesOptmz = optimizer.Clone();
 
             double lim = 1.0 / Math.Sqrt(InputShape[0]);
 
             weights = ND.Uniform(-lim, lim, InputShape[0], OutputShape[0]).Cast<Type>();
-            biases = ND.Zeros<Type>(1, OutputShape[0]);
+            if (useBiases)
+            {
+                biasesOptmz = optimizer.Clone();
+                biases = ND.Zeros<Type>(1, OutputShape[0]);
+            }
         }
 
         public void SetInputShape(int[] inputShape)

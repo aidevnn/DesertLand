@@ -129,25 +129,34 @@ namespace DesertLand
             }
         }
 
+        static void TestDigits<Type>()
+        {
+            Console.WriteLine($"Hello World! Digits MLP. Network<{typeof(Type).Name}>");
+
+            Utils.DebugNumpy = Utils.DbgNo;
+
+            (var trainX, var trainY, var testX, var testY) = ImportDigits.SplittedDatasets<Type>(ratio: 0.9);
+
+            var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(64, 32, new SigmoidActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
+
+            net.Summary();
+
+            var sw = Stopwatch.StartNew();
+            net.Fit(trainX, trainY, epochs: 100, batchSize: 100, displayEpochs: 10);
+            Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
+
+            net.Test(testX, testY);
+        }
+
         public static void Main(string[] args)
         {
             Utils.DebugNumpy = Utils.DbgLvlAll;
             //Test1();
 
-            //TestXor<float>();
-
-            var a = ND.Uniform<double>(1, 10, 4, 4);
-            Console.WriteLine(a);
-
-            var b = 3 * ND.Sq(a - 1) - 4;
-            var c = 3 * ND.Sq(a - 1) - 4 * ND.Sqrt(a + 5);
-
-            Console.WriteLine(b);
-            Console.WriteLine(c);
-
-            //Console.WriteLine(a.Min(0));
-            //Console.WriteLine(a.Min(1));
-
+            //TestXor<double>();
+            TestDigits<double>();
         }
     }
 }

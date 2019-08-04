@@ -17,6 +17,7 @@ namespace NDarrayLib
                 setAt = (i, v) => nDarray.setAt(i, v),
                 OwnData = false
             };
+
             return nd0;
         }
 
@@ -33,6 +34,7 @@ namespace NDarrayLib
                 setAt = (idx0, v) => nDarray.setAt(Utils.Int2IntIndex(idx0, nshape, nstrides), v),
                 OwnData = false
             };
+
             return nd0;
         }
 
@@ -45,6 +47,7 @@ namespace NDarrayLib
                 getAt = i => func(nDarray.GetAt(i)),
                 OwnData = false
             };
+
             return nd0;
         }
 

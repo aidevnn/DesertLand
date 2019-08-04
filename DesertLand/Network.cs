@@ -23,7 +23,7 @@ namespace DesertLand
         public readonly IAccuracy<Type> accuracy;
         public List<ILayer<Type>> layers = new List<ILayer<Type>>();
 
-        public void SetTrainable() => layers.ForEach(l => l.IsTraining = true);
+        public void SetTrainable(bool train = true) => layers.ForEach(l => l.IsTraining = train);
 
         public void AddLayer(ILayer<Type> layer)
         {
@@ -53,6 +53,7 @@ namespace DesertLand
 
         (double, double) TestOnBatch(NDarray<Type> X, NDarray<Type> y)
         {
+            SetTrainable(false);
             var yp = ForwardPass(X, false);
             var lossv = loss.Loss(y, yp).MeanAll();
             var accv = accuracy.Acc(y, yp).MeanAll();
@@ -78,7 +79,7 @@ namespace DesertLand
             int tot = 0;
             foreach (var layer in layers)
             {
-                Console.WriteLine($"Layer: {layer.Name,-20} Parameters: {layer.Params,3} Nodes[In:{layer.InputShape.Glue(),2} -> Out:{layer.OutputShape.Glue()}]");
+                Console.WriteLine($"Layer: {layer.Name,-20} Parameters: {layer.Params,5} Nodes[In:{layer.InputShape.Glue(),2} -> Out:{layer.OutputShape.Glue()}]");
                 tot += layer.Params;
             }
 
@@ -112,5 +113,10 @@ namespace DesertLand
             Console.WriteLine("End Training.");
         }
 
+        public void Test(NDarray<Type> testX, NDarray<Type> testY)
+        {
+            var (loss, acc) = TestOnBatch(testX, testY);
+            Console.WriteLine("TestResult Loss:{0:0.000000} Acc:{1:0.0000}", loss, acc);
+        }
     }
 }
