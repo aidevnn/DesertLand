@@ -179,8 +179,8 @@ namespace DesertLand
             //Test1();
 
             //TestXor<double>();
-            TestDigits<double>();
-            //TestIris<double>();
+            //TestDigits<double>();
+            TestIris<double>();
         }
     }
 }
