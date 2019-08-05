@@ -83,7 +83,7 @@ namespace DesertLand.Layers
         {
             weightsOptmz = optimizer.Clone();
 
-            double lim = 1.0 / Math.Sqrt(InputShape[0]);
+            double lim = 3.0 / Math.Sqrt(InputShape[0]);
 
             weights = ND.Uniform(-lim, lim, InputShape[0], OutputShape[0]).Cast<Type>();
             if (useBiases)

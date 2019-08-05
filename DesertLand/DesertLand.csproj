@@ -71,6 +71,8 @@
     <Compile Include="Network.cs" />
     <Compile Include="Losses\Accuracy.cs" />
     <Compile Include="ImportDigits.cs" />
+    <Compile Include="Activations\ReLuActivation.cs" />
+    <Compile Include="ImportIris.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NDarray\NDarray.csproj">
@@ -86,6 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="digits.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="iris.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

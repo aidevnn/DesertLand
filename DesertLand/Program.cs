@@ -136,9 +136,10 @@ namespace DesertLand
             Utils.DebugNumpy = Utils.DbgNo;
 
             (var trainX, var trainY, var testX, var testY) = ImportDigits.SplittedDatasets<Type>(ratio: 0.9);
+            Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
             var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-            net.AddLayer(new DenseLayer<Type>(64, 32, new SigmoidActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(64, 32, new TanhActivation<Type>()));
             net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
 
             net.Summary();
@@ -150,13 +151,36 @@ namespace DesertLand
             net.Test(testX, testY);
         }
 
+        static void TestIris<Type>()
+        {
+            Console.WriteLine($"Hello World! Iris MLP. Network<{typeof(Type).Name}>");
+
+            Utils.DebugNumpy = Utils.DbgNo;
+
+            (var trainX, var trainY, var testX, var testY) = ImportIris.SplittedDatasets<Type>(ratio: 0.8);
+            Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
+
+            var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(4, 5, new TanhActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(3, new SigmoidActivation<Type>()));
+
+            net.Summary();
+
+            var sw = Stopwatch.StartNew();
+            net.Fit(trainX, trainY, epochs: 50, batchSize: 10, displayEpochs: 5);
+            Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
+
+            net.Test(testX, testY);
+        }
+
         public static void Main(string[] args)
         {
-            Utils.DebugNumpy = Utils.DbgLvlAll;
+            //Utils.DebugNumpy = Utils.DbgLvlAll;
             //Test1();
 
             //TestXor<double>();
             TestDigits<double>();
+            //TestIris<double>();
         }
     }
 }
