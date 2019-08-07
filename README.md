@@ -62,7 +62,7 @@ net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
 net.Summary();
 
 var sw = Stopwatch.StartNew();
-net.Fit(trainX, trainY, epochs: 100, batchSize: 100, displayEpochs: 10);
+net.Fit(trainX, trainY, epochs: 50, batchSize: 100, displayEpochs: 5);
 Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
 
 net.Test(testX, testY);
@@ -82,20 +82,20 @@ Output Shape:10
 Total Parameters:2410
 
 Start Training...
-Epochs     0/100 Loss:0.052491 Acc:0.2044
-Epochs    10/100 Loss:0.006142 Acc:0.9469
-Epochs    20/100 Loss:0.002374 Acc:0.9813
-Epochs    30/100 Loss:0.001639 Acc:0.9894
-Epochs    40/100 Loss:0.001064 Acc:0.9950
-Epochs    50/100 Loss:0.000802 Acc:0.9956
-Epochs    60/100 Loss:0.000583 Acc:0.9969
-Epochs    70/100 Loss:0.000466 Acc:0.9981
-Epochs    80/100 Loss:0.000404 Acc:0.9981
-Epochs    90/100 Loss:0.000338 Acc:0.9981
-Epochs   100/100 Loss:0.000282 Acc:0.9981
+Epochs     0/50 Loss:0.053108 Acc:0.1119
+Epochs     5/50 Loss:0.040126 Acc:0.2788
+Epochs    10/50 Loss:0.015562 Acc:0.7638
+Epochs    15/50 Loss:0.004862 Acc:0.9600
+Epochs    20/50 Loss:0.002789 Acc:0.9781
+Epochs    25/50 Loss:0.002397 Acc:0.9844
+Epochs    30/50 Loss:0.001810 Acc:0.9875
+Epochs    35/50 Loss:0.001425 Acc:0.9919
+Epochs    40/50 Loss:0.001136 Acc:0.9950
+Epochs    45/50 Loss:0.001046 Acc:0.9956
+Epochs    50/50 Loss:0.000881 Acc:0.9981
 End Training.
-Time:42496 ms
-TestResult Loss:0.005300 Acc:0.9333
+Time:21406 ms
+TestResult Loss:0.004223 Acc:0.9500
 ```
 
 #### References.

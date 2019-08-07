@@ -11,9 +11,8 @@ namespace DesertLand
 
         public static (NDarray<Type>, NDarray<Type>, NDarray<Type>, NDarray<Type>) DigitsDataset<Type>(double ratio)
         {
-            Func<int, int, double> func0 = (i, v) => i == v ? 1 : 0;
-            Func<double, int, IEnumerable<double>> func1 = (v, i)
-                => i % 65 != 64 ? new double[] { v } : Enumerable.Range(0, 10).Select(v0 => func0((int)v, v0));
+            Func<int, IEnumerable<double>> func0 = v => Enumerable.Range(0, 10).Select(v0 => v == v0 ? 1.0 : 0.0);
+            Func<double, int, IEnumerable<double>> func1 = (v, i) => i % 65 != 64 ? new double[] { v } : func0((int)v);
 
             var raw = File.ReadAllLines("datasets/digits.csv").ToArray();
 

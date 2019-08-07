@@ -145,7 +145,7 @@ namespace DesertLand
             net.Summary();
 
             var sw = Stopwatch.StartNew();
-            net.Fit(trainX, trainY, epochs: 100, batchSize: 100, displayEpochs: 10);
+            net.Fit(trainX, trainY, epochs: 50, batchSize: 100, displayEpochs: 5);
             Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
 
             net.Test(testX, testY);
