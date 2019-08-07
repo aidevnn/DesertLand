@@ -19,12 +19,12 @@ namespace DesertLand
             var data = raw.SelectMany(l => l.Split(',')).Select(double.Parse).ToArray();
             data = data.SelectMany(func1).ToArray();
 
-            var nDarray = ND.CreateNDarray(data: data, -1, 74);
+            var nDarray = ND.CreateNDarray(data: data, shape: new int[] { -1, 74 });
             var idx0 = (int)(nDarray.Shape[0] * ratio);
-            (var train, var test) = ND.Split(nDarray, 0, idx0);
+            (var train, var test) = ND.Split(nDarray, axis: 0, idx: idx0);
 
-            (var trainX, var trainY) = ND.Split(train, 1, 64);
-            (var testX, var testY) = ND.Split(test, 1, 64);
+            (var trainX, var trainY) = ND.Split(train, axis: 1, idx: 64);
+            (var testX, var testY) = ND.Split(test, axis: 1, idx: 64);
 
             trainX = trainX / 16.0;
             testX = testX / 16.0;
@@ -37,14 +37,14 @@ namespace DesertLand
             var raw = File.ReadAllLines("datasets/iris.csv").ToArray();
             var data = raw.SelectMany(l => l.Split(',')).Select(double.Parse).ToArray();
 
-            var nDarray = ND.CreateNDarray(data: data, -1, 7);
+            var nDarray = ND.CreateNDarray(data: data, shape: new int[] { -1, 7 });
             var idx0 = (int)(nDarray.Shape[0] * ratio);
-            (var train, var test) = ND.Split(nDarray, 0, idx0);
+            (var train, var test) = ND.Split(nDarray, axis: 0, idx: idx0);
 
-            (var trainX, var trainY) = ND.Split(train, 1, 4);
-            (var testX, var testY) = ND.Split(test, 1, 4);
+            (var trainX, var trainY) = ND.Split(train, axis: 1, idx: 4);
+            (var testX, var testY) = ND.Split(test, axis: 1, idx: 4);
 
-            var vmax = ND.Max(trainX.Max(0, true), testX.Max(0, true)).Copy;
+            var vmax = ND.Max(trainX.Max(axis: 0, keepdims: true), testX.Max(axis: 0, keepdims: true)).Copy;
             trainX = trainX / vmax;
             testX = testX / vmax;
 

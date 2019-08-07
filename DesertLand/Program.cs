@@ -175,12 +175,12 @@ namespace DesertLand
 
         public static void Main(string[] args)
         {
-            Utils.DebugNumpy = Utils.DbgLvlAll;
+            //Utils.DebugNumpy = Utils.DbgLvlAll;
             //Test1();
 
             //TestXor<double>();
-            TestDigits<double>();
-            //TestIris<double>();
+            //TestDigits<double>();
+            TestIris<double>();
 
         }
     }
