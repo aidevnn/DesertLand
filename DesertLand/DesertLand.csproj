@@ -70,9 +70,8 @@
     <Compile Include="Losses\CrossEntropyLoss.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Losses\Accuracy.cs" />
-    <Compile Include="ImportDigits.cs" />
     <Compile Include="Activations\ReLuActivation.cs" />
-    <Compile Include="ImportIris.cs" />
+    <Compile Include="ImportData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NDarray\NDarray.csproj">
@@ -85,12 +84,13 @@
     <Folder Include="Optimizers\" />
     <Folder Include="Layers\" />
     <Folder Include="Losses\" />
+    <Folder Include="datasets\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="digits.csv">
+    <Content Include="datasets\digits.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="iris.csv">
+    <Content Include="datasets\iris.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

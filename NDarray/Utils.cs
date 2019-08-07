@@ -60,13 +60,14 @@ namespace NDarrayLib
             return idx1;
         }
 
-        public static int[] PrepareReshape(int[] baseShape, int[] shape)
+        public static int[] PrepareReshape(int[] baseShape, int[] shape) => PrepareReshape(ArrMul(baseShape), shape);
+
+        public static int[] PrepareReshape(int dim0, int[] shape)
         {
             int mone = shape.Count(i => i == -1);
             if (mone > 1)
                 throw new ArgumentException("Only one dimension can be broadcasted");
 
-            var dim0 = ArrMul(baseShape);
             if (mone == 1)
             {
                 int idx = shape.ToList().FindIndex(i => i == -1);
@@ -78,7 +79,7 @@ namespace NDarrayLib
             var dim1 = ArrMul(shape);
 
             if (dim0 != dim1)
-                throw new ArgumentException($"Cannot reshape ({baseShape.Glue()}) to ({shape.Glue()})");
+                throw new ArgumentException($"Cannot reshape to ({shape.Glue()})");
 
             return shape;
         }
@@ -206,6 +207,23 @@ namespace NDarrayLib
             nshape[axis] += shape1[axis];
 
             return nshape;
+        }
+
+        public static (int[], int[]) PrepareSplit(int[] shape, int axis, int idx)
+        {
+            if (axis < 0 || axis >= shape.Length)
+                throw new ArgumentException("Bad Split axis");
+
+            int dim = shape[axis];
+            if (idx < 0 || idx >= dim)
+                throw new ArgumentException("Bad Split index");
+
+            int[] shape0 = shape.ToArray();
+            int[] shape1 = shape.ToArray();
+            shape0[axis] = idx;
+            shape1[axis] -= idx;
+
+            return (shape0, shape1);
         }
     }
 }

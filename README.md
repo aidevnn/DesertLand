@@ -34,20 +34,20 @@ Output Shape:3
 Total Parameters:43
 
 Start Training...
-Epochs     0/50 Loss:0.121808 Acc:0.3250
-Epochs     5/50 Loss:0.105686 Acc:0.5417
-Epochs    10/50 Loss:0.092431 Acc:0.6667
-Epochs    15/50 Loss:0.073587 Acc:0.6833
-Epochs    20/50 Loss:0.063041 Acc:0.7500
-Epochs    25/50 Loss:0.057486 Acc:0.7667
-Epochs    30/50 Loss:0.054366 Acc:0.8583
-Epochs    35/50 Loss:0.051425 Acc:0.8333
-Epochs    40/50 Loss:0.049853 Acc:0.8833
-Epochs    45/50 Loss:0.047732 Acc:0.9000
-Epochs    50/50 Loss:0.046406 Acc:0.8750
+Epochs     0/50 Loss:0.122382 Acc:0.4083
+Epochs     5/50 Loss:0.068604 Acc:0.7250
+Epochs    10/50 Loss:0.051477 Acc:0.8667
+Epochs    15/50 Loss:0.042436 Acc:0.8833
+Epochs    20/50 Loss:0.038008 Acc:0.9417
+Epochs    25/50 Loss:0.032516 Acc:0.9417
+Epochs    30/50 Loss:0.029528 Acc:0.9333
+Epochs    35/50 Loss:0.025101 Acc:0.9333
+Epochs    40/50 Loss:0.022236 Acc:0.9500
+Epochs    45/50 Loss:0.020407 Acc:0.9667
+Epochs    50/50 Loss:0.019197 Acc:0.9583
 End Training.
-Time:235 ms
-TestResult Loss:0.044790 Acc:0.9667
+Time:195 ms
+TestResult Loss:0.009323 Acc:1.0000
 ```
 
 ## Example Digits from scipy dataset
@@ -56,7 +56,7 @@ TestResult Loss:0.044790 Acc:0.9667
 (var trainX, var trainY, var testX, var testY) = ImportDigits.SplittedDatasets<Type>(ratio: 0.9);
 
 var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-net.AddLayer(new DenseLayer<Type>(64, 32, new SigmoidActivation<Type>()));
+net.AddLayer(new DenseLayer<Type>(64, 32, new TanhActivation<Type>()));
 net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
 
 net.Summary();
@@ -73,28 +73,29 @@ net.Test(testX, testY);
 
 ```
 Hello World! Digits MLP. Network<Double>
+Train on 1617; Test on 180
 Summary
 Input  Shape:64
-Layer: DenseLayer-Sigmoid   Parameters:  2080 Nodes[In:64 -> Out:32]
+Layer: DenseLayer-Tanh      Parameters:  2080 Nodes[In:64 -> Out:32]
 Layer: DenseLayer-Sigmoid   Parameters:   330 Nodes[In:32 -> Out:10]
 Output Shape:10
 Total Parameters:2410
 
 Start Training...
-Epochs     0/100 Loss:0.052926 Acc:0.0869
-Epochs    10/100 Loss:0.017278 Acc:0.8469
-Epochs    20/100 Loss:0.006884 Acc:0.9575
-Epochs    30/100 Loss:0.004312 Acc:0.9694
-Epochs    40/100 Loss:0.003357 Acc:0.9769
-Epochs    50/100 Loss:0.002736 Acc:0.9819
-Epochs    60/100 Loss:0.002310 Acc:0.9838
-Epochs    70/100 Loss:0.001997 Acc:0.9875
-Epochs    80/100 Loss:0.001736 Acc:0.9888
-Epochs    90/100 Loss:0.001562 Acc:0.9931
-Epochs   100/100 Loss:0.001386 Acc:0.9938
+Epochs     0/100 Loss:0.052491 Acc:0.2044
+Epochs    10/100 Loss:0.006142 Acc:0.9469
+Epochs    20/100 Loss:0.002374 Acc:0.9813
+Epochs    30/100 Loss:0.001639 Acc:0.9894
+Epochs    40/100 Loss:0.001064 Acc:0.9950
+Epochs    50/100 Loss:0.000802 Acc:0.9956
+Epochs    60/100 Loss:0.000583 Acc:0.9969
+Epochs    70/100 Loss:0.000466 Acc:0.9981
+Epochs    80/100 Loss:0.000404 Acc:0.9981
+Epochs    90/100 Loss:0.000338 Acc:0.9981
+Epochs   100/100 Loss:0.000282 Acc:0.9981
 End Training.
-Time:47123 ms
-TestResult Loss:0.005358 Acc:0.9333
+Time:42496 ms
+TestResult Loss:0.005300 Acc:0.9333
 ```
 
 #### References.

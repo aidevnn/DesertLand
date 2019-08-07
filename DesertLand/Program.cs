@@ -135,7 +135,7 @@ namespace DesertLand
 
             Utils.DebugNumpy = Utils.DbgNo;
 
-            (var trainX, var trainY, var testX, var testY) = ImportDigits.SplittedDatasets<Type>(ratio: 0.9);
+            (var trainX, var trainY, var testX, var testY) = ImportData.DigitsDataset<Type>(ratio: 0.9);
             Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
             var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
@@ -157,7 +157,7 @@ namespace DesertLand
 
             Utils.DebugNumpy = Utils.DbgNo;
 
-            (var trainX, var trainY, var testX, var testY) = ImportIris.SplittedDatasets<Type>(ratio: 0.8);
+            (var trainX, var trainY, var testX, var testY) = ImportData.IrisDataset<Type>(ratio: 0.8);
             Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
             var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
@@ -175,12 +175,13 @@ namespace DesertLand
 
         public static void Main(string[] args)
         {
-            //Utils.DebugNumpy = Utils.DbgLvlAll;
+            Utils.DebugNumpy = Utils.DbgLvlAll;
             //Test1();
 
             //TestXor<double>();
-            //TestDigits<double>();
-            TestIris<double>();
+            TestDigits<double>();
+            //TestIris<double>();
+
         }
     }
 }

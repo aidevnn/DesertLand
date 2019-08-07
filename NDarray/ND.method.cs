@@ -25,7 +25,9 @@ namespace NDarrayLib
             return new NDarray<Type>(data: data, shape: shape);
         }
 
-        public static NDarray<Type> CreateNDarray<Type>(Type[] data, params int[] shape) => new NDarray<Type>(data: data, shape: shape);
+        public static NDarray<Type> CreateNDarray<Type>(Type[] data, params int[] shape) 
+            => new NDarray<Type>(data: data, shape: Utils.PrepareReshape(data.Length, shape));
+
         public static NDarray<Type> CreateNDarray<Type>(Type[,] data)
         {
             int dim0 = data.GetLength(0);
@@ -81,5 +83,30 @@ namespace NDarrayLib
             return allBatch;
         }
 
+        public static (NDarray<Type>, NDarray<Type>) Split<Type>(NDarray<Type> nDarray, int axis, int idx)
+        {
+            if (Utils.IsDebugLvl2) Console.WriteLine("Split");
+
+            (int[] nshape0, int[] nshape1) = Utils.PrepareSplit(nDarray.Shape, axis, idx);
+            var nd0 = new NDarray<Type>(nshape0);
+            var nd1 = new NDarray<Type>(nshape1);
+
+            nd0.getAt = idx0 =>
+            {
+                Utils.Int2ArrayIndex(idx0, nd0.Shape, nDarray.Indices);
+                var idx2 = Utils.Array2IntIndex(nDarray.Indices, nDarray.Shape, nDarray.Strides);
+                return nDarray.GetAt(idx2);
+            };
+
+            nd1.getAt = idx1 =>
+            {
+                Utils.Int2ArrayIndex(idx1, nd1.Shape, nDarray.Indices);
+                nDarray.Indices[axis] += idx;
+                var idx2 = Utils.Array2IntIndex(nDarray.Indices, nDarray.Shape, nDarray.Strides);
+                return nDarray.GetAt(idx2);
+            };
+
+            return (nd0, nd1);
+        }
     }
 }

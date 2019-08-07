@@ -264,5 +264,6 @@ namespace NDarrayLib
             //nd0.SetData(nd0.GetData);
             return nd0;
         }
+
     }
 }
