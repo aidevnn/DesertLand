@@ -106,19 +106,14 @@ namespace DesertLand
             var Xdata = ND.CreateNDarray(new double[4, 2] { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }).CastCopy<Type>();
             var Ydata = ND.CreateNDarray(new double[4, 1] { { 0 }, { 1 }, { 1 }, { 0 } }).CastCopy<Type>();
 
-            var net = new Network<Type>(new SGD<Type>(0.2), new SquareLoss<Type>(), new RoundAccuracy<Type>());
-            net.AddLayer(new DenseLayer<Type>(2, 8, new TanhActivation<Type>()));
-            net.AddLayer(new DenseLayer<Type>(1, new SigmoidActivation<Type>()));
-
-            //net.AddLayer(new DenseLayer<Type>(2, 8));
-            //net.AddLayer(new TanhLayer<Type>());
-            //net.AddLayer(new DenseLayer<Type>(1));
-            //net.AddLayer(new SigmoidLayer<Type>());
+            var net = new Network<Type>(new SGD<Type>(lr: 0.2), new SquareLoss<Type>(), new RoundAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(inputNodes: 2, outputNodes: 8, new TanhActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(outputNodes: 1, new SigmoidActivation<Type>()));
 
             net.Summary();
 
             var sw = Stopwatch.StartNew();
-            net.Fit(Xdata, Ydata, 1000, 4, 500);
+            net.Fit(Xdata, Ydata, epochs: 1000, batchSize: 4, displayEpochs: 50);
             Console.WriteLine($"Time:{sw.ElapsedMilliseconds} ms");
 
             Console.WriteLine("Prediction");
@@ -138,9 +133,9 @@ namespace DesertLand
             (var trainX, var trainY, var testX, var testY) = ImportData.DigitsDataset<Type>(ratio: 0.9);
             Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
-            var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-            net.AddLayer(new DenseLayer<Type>(64, 32, new TanhActivation<Type>()));
-            net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
+            var net = new Network<Type>(new SGD<Type>(lr: 0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(inputNodes: 64, outputNodes: 32, new TanhActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(outputNodes: 10, new SigmoidActivation<Type>()));
 
             net.Summary();
 
@@ -160,9 +155,9 @@ namespace DesertLand
             (var trainX, var trainY, var testX, var testY) = ImportData.IrisDataset<Type>(ratio: 0.8);
             Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
-            var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-            net.AddLayer(new DenseLayer<Type>(4, 5, new TanhActivation<Type>()));
-            net.AddLayer(new DenseLayer<Type>(3, new SigmoidActivation<Type>()));
+            var net = new Network<Type>(new SGD<Type>(lr: 0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+            net.AddLayer(new DenseLayer<Type>(inputNodes: 4, outputNodes: 5, new TanhActivation<Type>()));
+            net.AddLayer(new DenseLayer<Type>(outputNodes: 3, new SigmoidActivation<Type>()));
 
             net.Summary();
 
