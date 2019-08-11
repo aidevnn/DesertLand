@@ -4,12 +4,12 @@ A Deep Learning framework for education purpose in C#
 ## Example Iris dataset
 
 ```
-(var trainX, var trainY, var testX, var testY) = ImportIris.SplittedDatasets<Type>(ratio: 0.8);
+(var trainX, var trainY, var testX, var testY) = ImportData.IrisDataset<Type>(ratio: 0.8);
 Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
-var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-net.AddLayer(new DenseLayer<Type>(4, 5, new TanhActivation<Type>()));
-net.AddLayer(new DenseLayer<Type>(3, new SigmoidActivation<Type>()));
+var net = new Network<Type>(new SGD<Type>(lr: 0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+net.AddLayer(new DenseLayer<Type>(inputNodes: 4, outputNodes: 5, new TanhActivation<Type>()));
+net.AddLayer(new DenseLayer<Type>(outputNodes: 3, new SigmoidActivation<Type>()));
 
 net.Summary();
 
@@ -53,11 +53,12 @@ TestResult Loss:0.009323 Acc:1.0000
 ## Example Digits from scipy dataset
 
 ```
-(var trainX, var trainY, var testX, var testY) = ImportDigits.SplittedDatasets<Type>(ratio: 0.9);
+(var trainX, var trainY, var testX, var testY) = ImportData.DigitsDataset<Type>(ratio: 0.9);
+Console.WriteLine($"Train on {trainX.Shape[0]}; Test on {testX.Shape[0]}");
 
-var net = new Network<Type>(new SGD<Type>(0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
-net.AddLayer(new DenseLayer<Type>(64, 32, new TanhActivation<Type>()));
-net.AddLayer(new DenseLayer<Type>(10, new SigmoidActivation<Type>()));
+var net = new Network<Type>(new SGD<Type>(lr: 0.05), new SquareLoss<Type>(), new ArgmaxAccuracy<Type>());
+net.AddLayer(new DenseLayer<Type>(inputNodes: 64, outputNodes: 32, new TanhActivation<Type>()));
+net.AddLayer(new DenseLayer<Type>(outputNodes: 10, new SigmoidActivation<Type>()));
 
 net.Summary();
 
@@ -101,4 +102,4 @@ TestResult Loss:0.004223 Acc:0.9500
 #### References.
 Base code for layers / activations / network was in python and comes from this very great and useful ML repo https://github.com/eriklindernoren/ML-From-Scratch
 
-NDArray was inspired from NumSharp repo https://github.com/SciSharp/NumSharp and Proxem.NumNet repo https://github.com/Proxem/NumNet
+NDarray was inspired from NumSharp repo https://github.com/SciSharp/NumSharp and Proxem.NumNet repo https://github.com/Proxem/NumNet
